@@ -41,7 +41,7 @@ Run scripts from the repository root. Each primary script supports `--help`.
 The original file names and adapter directories are retained so local imports
 and checkpoint conventions remain recognizable.
 
-## Reevaluate frozen checkpoints
+## Evaluate Pretrained Models
 
 Place the original data and checkpoint directories under `runs/`; edit
 `lowdim_mc_checks/paths.json` if necessary.

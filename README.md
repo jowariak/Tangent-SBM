@@ -18,10 +18,6 @@ control.
 - Frozen-checkpoint evaluation and resumable Monte Carlo convergence checks.
 - Completed Gaussian and double-well ID measurements through MC4096.
 
-This source release does **not** contain trained checkpoints, generated datasets,
-or the complete collection of paper results. See [reproduction status](docs/REPRODUCTION.md)
-for exactly what is present. Neither training speedups nor superiority over
-deterministic mean predictors are implied by this repository.
 
 ## Setup
 
@@ -63,20 +59,12 @@ splits. A new run requires compatible checkpoints; the result JSON files alone
 cannot generate predictions. Existing evaluation caches are accepted only when
 their protocol/source hashes match.
 
-The MC4096 evaluator reports endpoint mean RMSE, pooled sensitivity error `E_J`,
-and finite-change RMSE. Endpoint metrics use all split conditions; sensitivity
-and finite changes retain the original first 512 conditions. Finite-change
-pairs share noise. The standard deviations in the summaries are across three
-training seeds, not across Monte Carlo samples.
 
 ## Documentation
 
 - [Experiment and dataset entry points](docs/EXPERIMENTS.md)
-- [Reproduction status and limits](docs/REPRODUCTION.md)
 - [Third-party code](THIRD_PARTY.md)
-- [Publishing this repository](docs/PUBLISHING.md)
 
 `SOURCE_MANIFEST.json` records hashes of the imported source files. Bundled
 third-party components retain their original licenses. A project-wide license
-for the authors' original code has not yet been selected; public visibility
-alone does not grant an open-source license.
+for the authors' original code has not yet been selected.

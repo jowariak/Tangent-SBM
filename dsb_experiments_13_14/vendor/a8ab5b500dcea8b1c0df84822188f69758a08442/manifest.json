@@ -1,0 +1,13 @@
+{
+  "revision": "a8ab5b500dcea8b1c0df84822188f69758a08442",
+  "files": {
+    "gsbm/gaussian_path.py": "bb7ce45d1cfd58137fa641353d0d121594a2f89f20437d5176073acad76d6ec9",
+    "gsbm/interp1d.py": "305a81b11af17f148cacdb920fd94085b04a8483979f4535f0be207628e1369f",
+    "gsbm/match_loss.py": "d3ceca8bef7dd528eae4a1efa45bd6effcb7748cd781921b57905df5052b7ed7",
+    "gsbm/sde.py": "1ea747e25b3bb9bceaf531994179ea33c7a8602122dd5ba75a476d3ad997bb22",
+    "gsbm/ema.py": "8c6e876c84717591acc61b64102c112edf655f98f68d64f4956f95857eee95a9",
+    "gsbm/pl_model.py": "b225d0aafbda89c0490baf17ee564f1d2d7bb39d8682155f0c953afb32d93a13",
+    "README.md": "ee11e68c2d8a1bdea84bb12fa4df83ef931622865bd35a422a12ece4bb15587e",
+    "LICENSE.md": "bc8f60ee50544b2dd70b4bc90e22de503aa23b317d284046a479811f2e06f396"
+  }
+}

@@ -1,0 +1,28 @@
+name: bridge_matching
+channels:
+  - defaults
+dependencies:
+  - python=3.9
+  - pytorch
+  - torchvision
+  - torchaudio
+  - h5py
+  - tqdm
+  - scipy
+  - scikit-learn
+  - python-lmdb
+  - matplotlib
+  - seaborn
+  - pandas
+  - hydra-core
+  - ninja
+  - pot
+  - pytorch-lightning
+  - p7zip
+  - wandb
+  - gdown
+  - accelerate
+  - torch-fidelity
+  - torchdiffeq
+  - lpips
+  - scanpy

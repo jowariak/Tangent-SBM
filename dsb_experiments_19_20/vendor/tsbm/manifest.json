@@ -1,0 +1,16 @@
+{
+  "repository": "maxencenoble/twisted-sb-matching",
+  "revision": "c9dfec715266a2fd45e1ab195eb3b388fa6e8ee8",
+  "archive_sha256": "02d11af89a5e21c97340efeb9d8e2fd6f39a1a37b529256c0bbd2c8d3722eea3",
+  "files": {
+    "LICENSE": "ca27d3aee73966cdcc7c2f5574d2149adccd4889c568ceeda0f255ad4cade946",
+    "README.md": "fc24b3d53942b6470699f51dc4c3febf11183f33b6313c8e36dffae9d988b63d",
+    "bridge/sde/diffusion_bridge.py": "8d15e4136676e915d17732a6ffbba39f070146a717c78614e88f18cf0bf5dd81",
+    "bridge/spline/__init__.py": "ff64444d4d5bccf11ce25111983db3e429cc3cdcf0d14e86b4cb21d0318f446b",
+    "bridge/spline/gaussian_path.py": "af1a8795f0cc5fd8b5ee7a076da547fb0bff0f3277526214d82f085c35c56828",
+    "bridge/spline/interp1d.py": "50bbe98f370e70d8ed1448aca56775bdb00d2416b73e2a63226516c7e00d7d4b",
+    "bridge/spline/sde.py": "4d4e4ace7d0afac148e0696ac1628e64478528e7e9ecb470d82c1df11fd22622",
+    "bridge/trainer_tsbm.py": "c09aa6faa4c594ca77ac7bc7c2ce39f532c7ae6ad02a7439fd4357e82532fea1",
+    "environment.yml": "bc64cdcd3787cb7ad72985ffc9a032844c79929784fae23f7b357b8374601234"
+  }
+}

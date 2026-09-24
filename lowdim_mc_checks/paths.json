@@ -1,0 +1,21 @@
+{
+  "gaussian": {
+    "data": "runs/gaussian_nonlinear_data",
+    "models": {
+      "conditional": "runs/gaussian_conditional_nonlinear_imf7/seed_{seed}/final_model.pt",
+      "gsbm": "runs/gaussian_gsbm_cost_v2/quadratic_0p1/seed_{seed}/final.pt",
+      "tsbm": "runs/gaussian_tsbm_cost_v2/quadratic_0p1/seed_{seed}/final.pt",
+      "tangent": "runs/gaussian_ablation_lambda_0p50/seed_{seed}/final_model.pt"
+    }
+  },
+  "double_well": {
+    "data": "runs/double_well_data",
+    "models": {
+      "conditional": "runs/double_well_conditional/seed_{seed}/final_model.pt",
+      "gsbm": "runs/double_well_gsbm/beta_1/seed_{seed}/final_model.pt",
+      "tsbm": "runs/double_well_tsbm/beta_1/seed_{seed}/final_model.pt",
+      "sobolev": "runs/double_well_tangent_naive_single_mse/seed_{seed}/final_model.pt",
+      "tangent": "runs/double_well_tangent_lam0p25/seed_{seed}/final_model.pt"
+    }
+  }
+}

@@ -1,0 +1,662 @@
+[
+  {
+    "path": "double_well_conditional_dsbm.py",
+    "sha256": "5815d52b8ba620fe15d8cf311021360d4c9534a883eec67fc291ebcb1e93b635",
+    "source_file": "double_well_conditional_dsbm.py"
+  },
+  {
+    "path": "double_well_conditional_gsbm.py",
+    "sha256": "fcc61d34a036922bab3ab6f4166830fee6212b8c287110c99719a2f9559e992f",
+    "source_file": "double_well_conditional_gsbm.py"
+  },
+  {
+    "path": "double_well_conditional_tsbm.py",
+    "sha256": "52a1fea1cc5f9489653933470343745e479a710c8169815e0cf11c88a911d46f",
+    "source_file": "double_well_conditional_tsbm.py"
+  },
+  {
+    "path": "double_well_data.py",
+    "sha256": "61c359c829b860e9c64d4ff8a9dc5ebd85e819163d615a795e7bd262f0c276ec",
+    "source_file": "double_well_data.py"
+  },
+  {
+    "path": "double_well_dsbm_unconditional.py",
+    "sha256": "1c009d3ba5e31024bcf530c31e8a94a23804d0c5da13212f2bedf8b867582051",
+    "source_file": "double_well_dsbm_unconditional.py"
+  },
+  {
+    "path": "double_well_tangent_naive_single_rollout.py",
+    "sha256": "4fdc097cdb7911c342ba759b102b197615fafce0b3f1f80d18d54eaf3b49d69b",
+    "source_file": "double_well_tangent_naive_single_rollout.py"
+  },
+  {
+    "path": "double_well_tangent_sbm_v2.py",
+    "sha256": "0d0491d3a3ec26afb3150b80f172c938f6e3a02c4925a3fb70149402c57f80df",
+    "source_file": "double_well_tangent_sbm_v2.py"
+  },
+  {
+    "path": "dsb_experiments_11_12/fetch_official.py",
+    "sha256": "177f8d9fd3eb81e6640576af70f73f9f2b6486ce5350cc1bd194da31b2e61591",
+    "source_file": "fetch_official.py"
+  },
+  {
+    "path": "dsb_experiments_11_12/fetch_tsbm.py",
+    "sha256": "5b02eb85e79e870d36af49fb0d30c2ebcc5ef56dda8f07b7c4873e60684e8daa",
+    "source_file": "fetch_tsbm.py"
+  },
+  {
+    "path": "dsb_experiments_11_12/fix_exp10_ema.py",
+    "sha256": "f92f57f47ee1a80b176f642b08c1559e17c179fd01b13942c75077d71efbc407",
+    "source_file": "fix_exp10_ema.py"
+  },
+  {
+    "path": "dsb_experiments_11_12/launch.py",
+    "sha256": "7a6a7bb83ac6681c34edd140540cc67927f4bda23abebb69764a5ad325010ab3",
+    "source_file": "launch.py"
+  },
+  {
+    "path": "dsb_experiments_11_12/pde_reference.py",
+    "sha256": "1b5ce3740577a4c5d1c7394281c3175184bee909a0bd771fc00414836df61909",
+    "source_file": "pde_reference.py"
+  },
+  {
+    "path": "dsb_experiments_11_12/run.sh",
+    "sha256": "76b7c70629b2cbbed399ef7d7c08a4511b705a3f4f8e31e8cfac874e9f4c79dc",
+    "source_file": "run.sh"
+  },
+  {
+    "path": "dsb_experiments_11_12/run_pde_tsbm.py",
+    "sha256": "f5de9bdbe3e23fc8ffcb90035303186aea54deebdaea76889a92a0c657a345e3",
+    "source_file": "run_pde_tsbm.py"
+  },
+  {
+    "path": "dsb_experiments_11_12/run_sns_gsbm.py",
+    "sha256": "f041c2d85bf9db7fcd496ea45b6ba5522687a18a7a1d45a985d91671cafd9d95",
+    "source_file": "run_sns_gsbm.py"
+  },
+  {
+    "path": "dsb_experiments_11_12/spdebench_sns_conditional_dsbm_v2.py",
+    "sha256": "0c24ea191f59baa253ab4def6ac36e85764638aa5a72f989af9beb37421c17e4",
+    "source_file": "spdebench_sns_conditional_dsbm_v2.py"
+  },
+  {
+    "path": "dsb_experiments_11_12/spdebench_sns_eval_final2.py",
+    "sha256": "7e50f55c5f6b0432314cae97e7e799911189c45a1824fbf9b59253a384155eed",
+    "source_file": "spdebench_sns_eval_final2.py"
+  },
+  {
+    "path": "dsb_experiments_11_12/validation.json",
+    "sha256": "caf14552ad8c0d3e0cf093363f1cafe8d4ad238de3393c99aa89f449372b82c8",
+    "source_file": "validation.json"
+  },
+  {
+    "path": "dsb_experiments_13_14/check_package.py",
+    "sha256": "d700e4d7de8a30e1ea201221d11e0a80676a5246286146f22d23c347c41ed223",
+    "source_file": "check_package.py"
+  },
+  {
+    "path": "dsb_experiments_13_14/fetch_official.py",
+    "sha256": "177f8d9fd3eb81e6640576af70f73f9f2b6486ce5350cc1bd194da31b2e61591",
+    "source_file": "fetch_official.py"
+  },
+  {
+    "path": "dsb_experiments_13_14/fetch_tsbm.py",
+    "sha256": "5b02eb85e79e870d36af49fb0d30c2ebcc5ef56dda8f07b7c4873e60684e8daa",
+    "source_file": "fetch_tsbm.py"
+  },
+  {
+    "path": "dsb_experiments_13_14/run.sh",
+    "sha256": "cad163943265dcf9b9a31a010dffb3698f02aa8e196e85ddd7ad72be304021db",
+    "source_file": "run.sh"
+  },
+  {
+    "path": "dsb_experiments_13_14/run_sns_spread_budget.py",
+    "sha256": "fa746fe55ea40376ad52a3c7c69807fe96b4a804bc95de650e6adbc7e4dcd43d",
+    "source_file": "run_sns_spread_budget.py"
+  },
+  {
+    "path": "dsb_experiments_13_14/run_sns_tsbm.py",
+    "sha256": "83ffec6771705eaf9ba2a103620384b3372e5e97ac3b40e5259ef765f346e83a",
+    "source_file": "run_sns_tsbm.py"
+  },
+  {
+    "path": "dsb_experiments_13_14/spdebench_sns_conditional_dsbm_v2.py",
+    "sha256": "0c24ea191f59baa253ab4def6ac36e85764638aa5a72f989af9beb37421c17e4",
+    "source_file": "spdebench_sns_conditional_dsbm_v2.py"
+  },
+  {
+    "path": "dsb_experiments_13_14/spdebench_sns_eval_final2.py",
+    "sha256": "7e50f55c5f6b0432314cae97e7e799911189c45a1824fbf9b59253a384155eed",
+    "source_file": "spdebench_sns_eval_final2.py"
+  },
+  {
+    "path": "dsb_experiments_13_14/spdebench_sns_response_dataset.py",
+    "sha256": "0f206e14c65e833a76a33a564f2d4171a6746f260f3ce1cc908f4831f25b6aaf",
+    "source_file": "spdebench_sns_response_dataset.py"
+  },
+  {
+    "path": "dsb_experiments_13_14/vendor/a8ab5b500dcea8b1c0df84822188f69758a08442/LICENSE.md",
+    "sha256": "bc8f60ee50544b2dd70b4bc90e22de503aa23b317d284046a479811f2e06f396",
+    "source_file": "LICENSE.md"
+  },
+  {
+    "path": "dsb_experiments_13_14/vendor/a8ab5b500dcea8b1c0df84822188f69758a08442/README.md",
+    "sha256": "ee11e68c2d8a1bdea84bb12fa4df83ef931622865bd35a422a12ece4bb15587e",
+    "source_file": "README.md"
+  },
+  {
+    "path": "dsb_experiments_13_14/vendor/a8ab5b500dcea8b1c0df84822188f69758a08442/gsbm/ema.py",
+    "sha256": "8c6e876c84717591acc61b64102c112edf655f98f68d64f4956f95857eee95a9",
+    "source_file": "ema.py"
+  },
+  {
+    "path": "dsb_experiments_13_14/vendor/a8ab5b500dcea8b1c0df84822188f69758a08442/gsbm/gaussian_path.py",
+    "sha256": "bb7ce45d1cfd58137fa641353d0d121594a2f89f20437d5176073acad76d6ec9",
+    "source_file": "gaussian_path.py"
+  },
+  {
+    "path": "dsb_experiments_13_14/vendor/a8ab5b500dcea8b1c0df84822188f69758a08442/gsbm/interp1d.py",
+    "sha256": "305a81b11af17f148cacdb920fd94085b04a8483979f4535f0be207628e1369f",
+    "source_file": "interp1d.py"
+  },
+  {
+    "path": "dsb_experiments_13_14/vendor/a8ab5b500dcea8b1c0df84822188f69758a08442/gsbm/match_loss.py",
+    "sha256": "d3ceca8bef7dd528eae4a1efa45bd6effcb7748cd781921b57905df5052b7ed7",
+    "source_file": "match_loss.py"
+  },
+  {
+    "path": "dsb_experiments_13_14/vendor/a8ab5b500dcea8b1c0df84822188f69758a08442/gsbm/pl_model.py",
+    "sha256": "b225d0aafbda89c0490baf17ee564f1d2d7bb39d8682155f0c953afb32d93a13",
+    "source_file": "pl_model.py"
+  },
+  {
+    "path": "dsb_experiments_13_14/vendor/a8ab5b500dcea8b1c0df84822188f69758a08442/gsbm/sde.py",
+    "sha256": "1ea747e25b3bb9bceaf531994179ea33c7a8602122dd5ba75a476d3ad997bb22",
+    "source_file": "sde.py"
+  },
+  {
+    "path": "dsb_experiments_13_14/vendor/a8ab5b500dcea8b1c0df84822188f69758a08442/manifest.json",
+    "sha256": "a29cafb25f2cdee306d8e0f74358c9a49baae1aedec8a4b19356b89a3a67dc85",
+    "source_file": "manifest.json"
+  },
+  {
+    "path": "dsb_experiments_13_14/vendor/tsbm/LICENSE",
+    "sha256": "ca27d3aee73966cdcc7c2f5574d2149adccd4889c568ceeda0f255ad4cade946",
+    "source_file": "LICENSE"
+  },
+  {
+    "path": "dsb_experiments_13_14/vendor/tsbm/README.md",
+    "sha256": "fc24b3d53942b6470699f51dc4c3febf11183f33b6313c8e36dffae9d988b63d",
+    "source_file": "README.md"
+  },
+  {
+    "path": "dsb_experiments_13_14/vendor/tsbm/bridge/sde/diffusion_bridge.py",
+    "sha256": "8d15e4136676e915d17732a6ffbba39f070146a717c78614e88f18cf0bf5dd81",
+    "source_file": "diffusion_bridge.py"
+  },
+  {
+    "path": "dsb_experiments_13_14/vendor/tsbm/bridge/spline/__init__.py",
+    "sha256": "ff64444d4d5bccf11ce25111983db3e429cc3cdcf0d14e86b4cb21d0318f446b",
+    "source_file": "__init__.py"
+  },
+  {
+    "path": "dsb_experiments_13_14/vendor/tsbm/bridge/spline/gaussian_path.py",
+    "sha256": "af1a8795f0cc5fd8b5ee7a076da547fb0bff0f3277526214d82f085c35c56828",
+    "source_file": "gaussian_path.py"
+  },
+  {
+    "path": "dsb_experiments_13_14/vendor/tsbm/bridge/spline/interp1d.py",
+    "sha256": "50bbe98f370e70d8ed1448aca56775bdb00d2416b73e2a63226516c7e00d7d4b",
+    "source_file": "interp1d.py"
+  },
+  {
+    "path": "dsb_experiments_13_14/vendor/tsbm/bridge/spline/sde.py",
+    "sha256": "4d4e4ace7d0afac148e0696ac1628e64478528e7e9ecb470d82c1df11fd22622",
+    "source_file": "sde.py"
+  },
+  {
+    "path": "dsb_experiments_13_14/vendor/tsbm/bridge/trainer_tsbm.py",
+    "sha256": "c09aa6faa4c594ca77ac7bc7c2ce39f532c7ae6ad02a7439fd4357e82532fea1",
+    "source_file": "trainer_tsbm.py"
+  },
+  {
+    "path": "dsb_experiments_13_14/vendor/tsbm/environment.yml",
+    "sha256": "bc64cdcd3787cb7ad72985ffc9a032844c79929784fae23f7b357b8374601234",
+    "source_file": "environment.yml"
+  },
+  {
+    "path": "dsb_experiments_13_14/vendor/tsbm/manifest.json",
+    "sha256": "0436dbc81704e450f5955aaf36a24544ad4a5237d1692a7aa2a0467421f493ac",
+    "source_file": "manifest.json"
+  },
+  {
+    "path": "dsb_experiments_15_16/check_package.py",
+    "sha256": "d700e4d7de8a30e1ea201221d11e0a80676a5246286146f22d23c347c41ed223",
+    "source_file": "check_package.py"
+  },
+  {
+    "path": "dsb_experiments_15_16/run.sh",
+    "sha256": "5ad12726772aa971dd6e5efeda086eecc878356187e0f3b18d8ce1052e6d363f",
+    "source_file": "run.sh"
+  },
+  {
+    "path": "dsb_experiments_15_16/run_sns_intervention_test.py",
+    "sha256": "0ba6f5a09bb7e9009058a16810bf391af9adbc14dc5167538af9c7ce8abbfba2",
+    "source_file": "run_sns_intervention_test.py"
+  },
+  {
+    "path": "dsb_experiments_15_16/run_sns_local_budget.py",
+    "sha256": "93a296b0f6326240cc91b14e47df5fcefa93f870ac2cacc5e075363d67652aaa",
+    "source_file": "run_sns_local_budget.py"
+  },
+  {
+    "path": "dsb_experiments_15_16/spdebench_sns_conditional_dsbm_v2.py",
+    "sha256": "0c24ea191f59baa253ab4def6ac36e85764638aa5a72f989af9beb37421c17e4",
+    "source_file": "spdebench_sns_conditional_dsbm_v2.py"
+  },
+  {
+    "path": "dsb_experiments_15_16/spdebench_sns_eval_final2.py",
+    "sha256": "7e50f55c5f6b0432314cae97e7e799911189c45a1824fbf9b59253a384155eed",
+    "source_file": "spdebench_sns_eval_final2.py"
+  },
+  {
+    "path": "dsb_experiments_15_16/spdebench_sns_response_dataset.py",
+    "sha256": "0f206e14c65e833a76a33a564f2d4171a6746f260f3ce1cc908f4831f25b6aaf",
+    "source_file": "spdebench_sns_response_dataset.py"
+  },
+  {
+    "path": "dsb_experiments_17_18/check_package.py",
+    "sha256": "d700e4d7de8a30e1ea201221d11e0a80676a5246286146f22d23c347c41ed223",
+    "source_file": "check_package.py"
+  },
+  {
+    "path": "dsb_experiments_17_18/common.py",
+    "sha256": "3ef42e9c30e02135c2d3363c78a2310a8be874c280b275b637edaaccd84c7ae9",
+    "source_file": "common.py"
+  },
+  {
+    "path": "dsb_experiments_17_18/run.sh",
+    "sha256": "cdb489210b949fbad069fa6adc15660811f2b7a6271c61d0ab90ca33f38ad728",
+    "source_file": "run.sh"
+  },
+  {
+    "path": "dsb_experiments_17_18/run_sns_figure.py",
+    "sha256": "b7cab1e7f4e13b3433c4788ab0339fdc882bbbdfdd534d33069ee6b06978e7d0",
+    "source_file": "run_sns_figure.py"
+  },
+  {
+    "path": "dsb_experiments_17_18/run_sns_unconditional.py",
+    "sha256": "c53ce0c42af96d1b6ee7677883e1f3f9b690bc4405cd0a9cb20d933f9c72dfd3",
+    "source_file": "run_sns_unconditional.py"
+  },
+  {
+    "path": "dsb_experiments_17_18/spdebench_sns_conditional_dsbm_v2.py",
+    "sha256": "0c24ea191f59baa253ab4def6ac36e85764638aa5a72f989af9beb37421c17e4",
+    "source_file": "spdebench_sns_conditional_dsbm_v2.py"
+  },
+  {
+    "path": "dsb_experiments_17_18/spdebench_sns_eval_final2.py",
+    "sha256": "7e50f55c5f6b0432314cae97e7e799911189c45a1824fbf9b59253a384155eed",
+    "source_file": "spdebench_sns_eval_final2.py"
+  },
+  {
+    "path": "dsb_experiments_19_20/backward_metrics.py",
+    "sha256": "91d02fd281033648f4148fb3441488f6f8aff34c1d20414bf093f80597271e1b",
+    "source_file": "backward_metrics.py"
+  },
+  {
+    "path": "dsb_experiments_19_20/fetch_official.py",
+    "sha256": "177f8d9fd3eb81e6640576af70f73f9f2b6486ce5350cc1bd194da31b2e61591",
+    "source_file": "fetch_official.py"
+  },
+  {
+    "path": "dsb_experiments_19_20/fetch_tsbm.py",
+    "sha256": "5b02eb85e79e870d36af49fb0d30c2ebcc5ef56dda8f07b7c4873e60684e8daa",
+    "source_file": "fetch_tsbm.py"
+  },
+  {
+    "path": "dsb_experiments_19_20/gaussian_reference.py",
+    "sha256": "5b2572187a3263d65bd5c4bad83cbd5d4df87e516039a09d0a7023a96654eca4",
+    "source_file": "gaussian_reference.py"
+  },
+  {
+    "path": "dsb_experiments_19_20/gsbm_engine.py",
+    "sha256": "4f644f2cd44a5a28eab94d16262729ce1210ec4b5371e84cca9a7a951516bd5b",
+    "source_file": "gsbm_engine.py"
+  },
+  {
+    "path": "dsb_experiments_19_20/run.sh",
+    "sha256": "ec023fc155ed8bdb186bc478b30c1a9d1d16ce8a93f21e34df7ad0bd6ff37421",
+    "source_file": "run.sh"
+  },
+  {
+    "path": "dsb_experiments_19_20/run_gaussian.py",
+    "sha256": "4615f77d0f68b7d91d64328b207fa61c6805b6fa85315bf862f39eace7096edd",
+    "source_file": "run_gaussian.py"
+  },
+  {
+    "path": "dsb_experiments_19_20/tsbm_engine.py",
+    "sha256": "f64096e78d801eb1c858a338b962b475abfe5ca12de7a8ec7816f06f23dfc74e",
+    "source_file": "tsbm_engine.py"
+  },
+  {
+    "path": "dsb_experiments_19_20/vendor/a8ab5b500dcea8b1c0df84822188f69758a08442/LICENSE.md",
+    "sha256": "bc8f60ee50544b2dd70b4bc90e22de503aa23b317d284046a479811f2e06f396",
+    "source_file": "LICENSE.md"
+  },
+  {
+    "path": "dsb_experiments_19_20/vendor/a8ab5b500dcea8b1c0df84822188f69758a08442/README.md",
+    "sha256": "ee11e68c2d8a1bdea84bb12fa4df83ef931622865bd35a422a12ece4bb15587e",
+    "source_file": "README.md"
+  },
+  {
+    "path": "dsb_experiments_19_20/vendor/a8ab5b500dcea8b1c0df84822188f69758a08442/gsbm/ema.py",
+    "sha256": "8c6e876c84717591acc61b64102c112edf655f98f68d64f4956f95857eee95a9",
+    "source_file": "ema.py"
+  },
+  {
+    "path": "dsb_experiments_19_20/vendor/a8ab5b500dcea8b1c0df84822188f69758a08442/gsbm/gaussian_path.py",
+    "sha256": "bb7ce45d1cfd58137fa641353d0d121594a2f89f20437d5176073acad76d6ec9",
+    "source_file": "gaussian_path.py"
+  },
+  {
+    "path": "dsb_experiments_19_20/vendor/a8ab5b500dcea8b1c0df84822188f69758a08442/gsbm/interp1d.py",
+    "sha256": "305a81b11af17f148cacdb920fd94085b04a8483979f4535f0be207628e1369f",
+    "source_file": "interp1d.py"
+  },
+  {
+    "path": "dsb_experiments_19_20/vendor/a8ab5b500dcea8b1c0df84822188f69758a08442/gsbm/match_loss.py",
+    "sha256": "d3ceca8bef7dd528eae4a1efa45bd6effcb7748cd781921b57905df5052b7ed7",
+    "source_file": "match_loss.py"
+  },
+  {
+    "path": "dsb_experiments_19_20/vendor/a8ab5b500dcea8b1c0df84822188f69758a08442/gsbm/pl_model.py",
+    "sha256": "b225d0aafbda89c0490baf17ee564f1d2d7bb39d8682155f0c953afb32d93a13",
+    "source_file": "pl_model.py"
+  },
+  {
+    "path": "dsb_experiments_19_20/vendor/a8ab5b500dcea8b1c0df84822188f69758a08442/gsbm/sde.py",
+    "sha256": "1ea747e25b3bb9bceaf531994179ea33c7a8602122dd5ba75a476d3ad997bb22",
+    "source_file": "sde.py"
+  },
+  {
+    "path": "dsb_experiments_19_20/vendor/a8ab5b500dcea8b1c0df84822188f69758a08442/manifest.json",
+    "sha256": "a29cafb25f2cdee306d8e0f74358c9a49baae1aedec8a4b19356b89a3a67dc85",
+    "source_file": "manifest.json"
+  },
+  {
+    "path": "dsb_experiments_19_20/vendor/tsbm/LICENSE",
+    "sha256": "ca27d3aee73966cdcc7c2f5574d2149adccd4889c568ceeda0f255ad4cade946",
+    "source_file": "LICENSE"
+  },
+  {
+    "path": "dsb_experiments_19_20/vendor/tsbm/README.md",
+    "sha256": "fc24b3d53942b6470699f51dc4c3febf11183f33b6313c8e36dffae9d988b63d",
+    "source_file": "README.md"
+  },
+  {
+    "path": "dsb_experiments_19_20/vendor/tsbm/bridge/sde/diffusion_bridge.py",
+    "sha256": "8d15e4136676e915d17732a6ffbba39f070146a717c78614e88f18cf0bf5dd81",
+    "source_file": "diffusion_bridge.py"
+  },
+  {
+    "path": "dsb_experiments_19_20/vendor/tsbm/bridge/spline/__init__.py",
+    "sha256": "ff64444d4d5bccf11ce25111983db3e429cc3cdcf0d14e86b4cb21d0318f446b",
+    "source_file": "__init__.py"
+  },
+  {
+    "path": "dsb_experiments_19_20/vendor/tsbm/bridge/spline/gaussian_path.py",
+    "sha256": "af1a8795f0cc5fd8b5ee7a076da547fb0bff0f3277526214d82f085c35c56828",
+    "source_file": "gaussian_path.py"
+  },
+  {
+    "path": "dsb_experiments_19_20/vendor/tsbm/bridge/spline/interp1d.py",
+    "sha256": "50bbe98f370e70d8ed1448aca56775bdb00d2416b73e2a63226516c7e00d7d4b",
+    "source_file": "interp1d.py"
+  },
+  {
+    "path": "dsb_experiments_19_20/vendor/tsbm/bridge/spline/sde.py",
+    "sha256": "4d4e4ace7d0afac148e0696ac1628e64478528e7e9ecb470d82c1df11fd22622",
+    "source_file": "sde.py"
+  },
+  {
+    "path": "dsb_experiments_19_20/vendor/tsbm/bridge/trainer_tsbm.py",
+    "sha256": "c09aa6faa4c594ca77ac7bc7c2ce39f532c7ae6ad02a7439fd4357e82532fea1",
+    "source_file": "trainer_tsbm.py"
+  },
+  {
+    "path": "dsb_experiments_19_20/vendor/tsbm/environment.yml",
+    "sha256": "bc64cdcd3787cb7ad72985ffc9a032844c79929784fae23f7b357b8374601234",
+    "source_file": "environment.yml"
+  },
+  {
+    "path": "dsb_experiments_19_20/vendor/tsbm/manifest.json",
+    "sha256": "0436dbc81704e450f5955aaf36a24544ad4a5237d1692a7aa2a0467421f493ac",
+    "source_file": "manifest.json"
+  },
+  {
+    "path": "gaussian_conditional_dsbm_nonlinear.py",
+    "sha256": "5b2572187a3263d65bd5c4bad83cbd5d4df87e516039a09d0a7023a96654eca4",
+    "source_file": "gaussian_conditional_dsbm_nonlinear.py"
+  },
+  {
+    "path": "gaussian_dsbm_unconditional.py",
+    "sha256": "cb31ed9ebe471d655a27d80f5e4e127af38a8fbf7a3145fcc9b7a125465fa027",
+    "source_file": "gaussian_dsbm_unconditional.py"
+  },
+  {
+    "path": "gaussian_nonlinear_data.py",
+    "sha256": "ba58abfc0bedd9afcd3550ee6b7da6802b86baeda2c52854f73620ced6acc4b0",
+    "source_file": "gaussian_nonlinear_data.py"
+  },
+  {
+    "path": "gaussian_response_collocation.py",
+    "sha256": "917c4a19fd567cadd368047284609b4b02c7ea5150c26b26c49e29ed44907f87",
+    "source_file": "gaussian_response_collocation.py"
+  },
+  {
+    "path": "gaussian_tangent_sbm_workshop_ablation.py",
+    "sha256": "cbdb9801efb9b57ae37afbd1db8857986904ff2988077f63fcfdcf0a145bcd30",
+    "source_file": "gaussian_tangent_sbm_workshop_ablation.py"
+  },
+  {
+    "path": "lowdim_mc_checks/double_well_reference.py",
+    "sha256": "5815d52b8ba620fe15d8cf311021360d4c9534a883eec67fc291ebcb1e93b635",
+    "source_file": "double_well_reference.py"
+  },
+  {
+    "path": "lowdim_mc_checks/evaluate.py",
+    "sha256": "e356bde82de70d8dbc7ea061a45b99c1301d40f5cb71a2fe3a1244c56f91c739",
+    "source_file": "evaluate.py"
+  },
+  {
+    "path": "lowdim_mc_checks/extend.py",
+    "sha256": "473e1c72ac84aada4d9273a591746d7bfba75716f1a98d0d05fd692f0f5667ac",
+    "source_file": "extend.py"
+  },
+  {
+    "path": "lowdim_mc_checks/gaussian_reference.py",
+    "sha256": "5b2572187a3263d65bd5c4bad83cbd5d4df87e516039a09d0a7023a96654eca4",
+    "source_file": "gaussian_reference.py"
+  },
+  {
+    "path": "lowdim_mc_checks/paths.json",
+    "sha256": "2a005981673ebd8d3357a5e7216ff2cf9c0494113b1f403b8297405a73e2ab16",
+    "source_file": "paths.json"
+  },
+  {
+    "path": "lowdim_mc_checks/run.sh",
+    "sha256": "c5daee4b94c019d75a8348213e9c87e27c7fb9467804662d2799511742e630a8",
+    "source_file": "run.sh"
+  },
+  {
+    "path": "lowdim_mc_checks/self_test.py",
+    "sha256": "7110e373bb39757cf0d5a05d9b85dd61e2e2c9050e4f8881bc646b4caab0b3a4",
+    "source_file": "self_test.py"
+  },
+  {
+    "path": "pdebench_gsbm_official/fetch_official.py",
+    "sha256": "177f8d9fd3eb81e6640576af70f73f9f2b6486ce5350cc1bd194da31b2e61591",
+    "source_file": "fetch_official.py"
+  },
+  {
+    "path": "pdebench_gsbm_official/pde_reference.py",
+    "sha256": "1b5ce3740577a4c5d1c7394281c3175184bee909a0bd771fc00414836df61909",
+    "source_file": "pde_reference.py"
+  },
+  {
+    "path": "pdebench_gsbm_official/run.sh",
+    "sha256": "2efbc81d96cfe8237fa76e107c648a589d9efb35141c6e48e877faab8f0bcf67",
+    "source_file": "run.sh"
+  },
+  {
+    "path": "pdebench_gsbm_official/run_pde_gsbm.py",
+    "sha256": "4c338d230c623f82fa9a941a2f0ba504f569cae8ac91e9513614641b01e94649",
+    "source_file": "run_pde_gsbm.py"
+  },
+  {
+    "path": "pdebench_reaction_diffusion_conditional_dsbm.py",
+    "sha256": "3cc968fbcd16018af806aaac81ae04be7f00624cee991ad81c7f3b3f9784bd22",
+    "source_file": "pdebench_reaction_diffusion_conditional_dsbm.py"
+  },
+  {
+    "path": "pdebench_reaction_diffusion_data.py",
+    "sha256": "c269344cbbf6b599a86f2988fa1afe8781227133698484ce003d0a6bbad34950",
+    "source_file": "pdebench_reaction_diffusion_data.py"
+  },
+  {
+    "path": "pdebench_reaction_diffusion_direct_operator_fair.py",
+    "sha256": "0ea06fffde1f80652405d413a072948586c639c17affbab638dfa2c63a607f66",
+    "source_file": "pdebench_reaction_diffusion_direct_operator_fair.py"
+  },
+  {
+    "path": "pdebench_reaction_diffusion_dsbm_unconditional_v2.py",
+    "sha256": "6a74ed0680ba88df8002f47780d0fd1e5170e33ef68bf57fdf0334161f7defa7",
+    "source_file": "pdebench_reaction_diffusion_dsbm_unconditional_v2.py"
+  },
+  {
+    "path": "pdebench_reaction_diffusion_official.py",
+    "sha256": "ee3ab42e3f1ae1b2599b6b2a7d725110fe65483a732d3aec081a0808e47f61ff",
+    "source_file": "pdebench_reaction_diffusion_official.py"
+  },
+  {
+    "path": "pdebench_reaction_diffusion_tangent_sbm_ablations.py",
+    "sha256": "48ca201822fdc808e1a982e83a3bcbe3a80248c039077d8a52fb1a1537a67328",
+    "source_file": "pdebench_reaction_diffusion_tangent_sbm_ablations.py"
+  },
+  {
+    "path": "pdebench_reaction_diffusion_tangent_sbm_v3.py",
+    "sha256": "cbcdeba4e3ee756e3d744bae1b7894c716cc2cb9639f14ef4635bfb09743fbde",
+    "source_file": "pdebench_reaction_diffusion_tangent_sbm_v3.py"
+  },
+  {
+    "path": "prepare_pdebench_budget_matched_endpoints.py",
+    "sha256": "1593231cb31deeca6de83e65f5dcea9d77a9c1bf2dd7898dafeca5e1b81bc90e",
+    "source_file": "prepare_pdebench_budget_matched_endpoints.py"
+  },
+  {
+    "path": "prepare_pdebench_spread_budget_endpoints.py",
+    "sha256": "d8bc968ccb765d44ec2a4ff30c98f0a3a989fd29171e7a6d209784486d705ddf",
+    "source_file": "prepare_pdebench_spread_budget_endpoints.py"
+  },
+  {
+    "path": "sns_final2_mc1024/evaluate.py",
+    "sha256": "e376815d25abc5b751dc56bc1a14cceb15630a793d2f773fa30f4cbe06a7d0c3",
+    "source_file": "evaluate.py"
+  },
+  {
+    "path": "sns_final2_mc1024/frozen_common.py",
+    "sha256": "3ef42e9c30e02135c2d3363c78a2310a8be874c280b275b637edaaccd84c7ae9",
+    "source_file": "frozen_common.py"
+  },
+  {
+    "path": "sns_final2_mc1024/model_loader.py",
+    "sha256": "9411fb1bffa7027bec5173ebcd854b191c22732ad65673778f6a02fde9969b1e",
+    "source_file": "model_loader.py"
+  },
+  {
+    "path": "sns_final2_mc1024/run.sh",
+    "sha256": "c945740d27be9d94c80892ac4f6c84e26caacc5f895e055c2f0cde30f71eb62b",
+    "source_file": "run.sh"
+  },
+  {
+    "path": "sns_final2_mc1024/spdebench_sns_conditional_dsbm_v2.py",
+    "sha256": "0c24ea191f59baa253ab4def6ac36e85764638aa5a72f989af9beb37421c17e4",
+    "source_file": "spdebench_sns_conditional_dsbm_v2.py"
+  },
+  {
+    "path": "sns_final2_mc1024/spdebench_sns_eval_final2.py",
+    "sha256": "7e50f55c5f6b0432314cae97e7e799911189c45a1824fbf9b59253a384155eed",
+    "source_file": "spdebench_sns_eval_final2.py"
+  },
+  {
+    "path": "spdebench_sns_conditional_dsbm_v2.py",
+    "sha256": "0c24ea191f59baa253ab4def6ac36e85764638aa5a72f989af9beb37421c17e4",
+    "source_file": "spdebench_sns_conditional_dsbm_v2.py"
+  },
+  {
+    "path": "spdebench_sns_conditional_flow_matching.py",
+    "sha256": "02712befd3d50d537487b872c805241e37c02b45d79bb441d5080ce905213e4e",
+    "source_file": "spdebench_sns_conditional_flow_matching.py"
+  },
+  {
+    "path": "spdebench_sns_derivative_mean_operator.py",
+    "sha256": "efea271e9783965eb34015eb4c6257b5469ea678ab87914374685b844899d649",
+    "source_file": "spdebench_sns_derivative_mean_operator.py"
+  },
+  {
+    "path": "spdebench_sns_direct_mean_operator.py",
+    "sha256": "4bb5a4fc840c8169883e1f2d33be217b6fe2919bd9e3ba9effc2d573d0dce873",
+    "source_file": "spdebench_sns_direct_mean_operator.py"
+  },
+  {
+    "path": "spdebench_sns_eval_final2.py",
+    "sha256": "7e50f55c5f6b0432314cae97e7e799911189c45a1824fbf9b59253a384155eed",
+    "source_file": "spdebench_sns_eval_final2.py"
+  },
+  {
+    "path": "spdebench_sns_make_final2_eval.py",
+    "sha256": "bd1d451757c3d7ab1dfab09b3f4f9fdea913cdc6224129fb4a213fc95a10ac79",
+    "source_file": "spdebench_sns_make_final2_eval.py"
+  },
+  {
+    "path": "spdebench_sns_make_locked_final_eval.py",
+    "sha256": "a044d671b2c4d323de11c4ffa47784cb0df4cf75fb460e3da2eb6e22aecdb65b",
+    "source_file": "spdebench_sns_make_locked_final_eval.py"
+  },
+  {
+    "path": "spdebench_sns_response_dataset.py",
+    "sha256": "0f206e14c65e833a76a33a564f2d4171a6746f260f3ce1cc908f4831f25b6aaf",
+    "source_file": "spdebench_sns_response_dataset.py"
+  },
+  {
+    "path": "spdebench_sns_tangent_endpoint_pinned.py",
+    "sha256": "4e42cad9497f84fbd1e6b37c69d6eb7a8e12abb62b878df19e343b872b0bcbcb",
+    "source_file": "spdebench_sns_tangent_endpoint_pinned.py"
+  },
+  {
+    "path": "spdebench_sns_tangent_pathwise_mse.py",
+    "sha256": "7df8f8fda0c36b31a39a0cea36a4e2df3606927d4730690869d6fb8d4f7affbf",
+    "source_file": "spdebench_sns_tangent_pathwise_mse.py"
+  },
+  {
+    "path": "spdebench_sns_tangent_response_amount.py",
+    "sha256": "f577e476936ab875049156b79585ac3e256e57b10153e4b0a186d9b5d4af620a",
+    "source_file": "spdebench_sns_tangent_response_amount.py"
+  },
+  {
+    "path": "spdebench_sns_tangent_sbm_multipair_memfix.py",
+    "sha256": "e97325a55f256e844fbf4eb23bcdaf1a96e1951a69cddd952792b2d67c69ded9",
+    "source_file": "spdebench_sns_tangent_sbm_multipair_memfix.py"
+  },
+  {
+    "path": "spdebench_sns_tangent_shuffled_targets.py",
+    "sha256": "77026981a21bb1caf8c8ff848631b43949cc6d877f87eb427898267abc72e12b",
+    "source_file": "spdebench_sns_tangent_shuffled_targets.py"
+  },
+  {
+    "path": "spdebench_sns_tangent_sign_reversed_targets.py",
+    "sha256": "73cd0427f37a701443f13910ca47396ef80e7325f86f99baf8036ecc3f4ec91a",
+    "source_file": "spdebench_sns_tangent_sign_reversed_targets.py"
+  }
+]

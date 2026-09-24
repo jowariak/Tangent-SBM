@@ -1,0 +1,7 @@
+# Reproduction target for the completed low-dimensional MC evaluation.
+# Select the CUDA/CPU PyTorch wheel appropriate to your machine.
+torch==2.8.0
+numpy>=1.26,<3
+tqdm>=4.66,<5
+ipdb==0.13.13
+matplotlib>=3.8,<4

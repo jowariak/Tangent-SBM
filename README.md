@@ -52,12 +52,6 @@ python lowdim_mc_checks/evaluate.py --dataset gaussian --mc 8 16 32 64 128 256 5
 python lowdim_mc_checks/evaluate.py --dataset double_well --mc 8 16 32 64 128 256 512 1024 2048 4096
 ```
 
-These commands use all three seeds and ID by default. Add
-`--splits test_seen test_id test_ood_near test_ood_far` for all low-dimensional
-splits. A new run requires compatible checkpoints; the result JSON files alone
-cannot generate predictions. Existing evaluation caches are accepted only when
-their protocol/source hashes match.
-
 
 ## Documentation
 

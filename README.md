@@ -16,7 +16,6 @@ control.
 - Conditional GSBM/TSBM adapters with third-party attribution and source manifests.
 - Target, coverage, rollout, budget, and alternative-predictor controls.
 - Frozen-checkpoint evaluation and resumable Monte Carlo convergence checks.
-- Completed Gaussian and double-well ID measurements through MC4096.
 
 
 ## Setup

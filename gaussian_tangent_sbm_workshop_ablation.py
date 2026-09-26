@@ -1683,8 +1683,6 @@ def parse_args():
         default=None,
         help=(
             "Override checkpoint inner_steps. "
-            "Use only for smoke testing unless "
-            "you rerun all baselines fairly."
         ),
     )
 

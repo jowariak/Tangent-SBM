@@ -20,8 +20,6 @@ try:
 except ImportError as exc:
     raise ImportError(
         "Could not import gaussian_conditional_dsbm_nonlinear.py.\n"
-        "Place gaussian_tangent_sbm_nonlinear.py in the SAME repo "
-        "directory as gaussian_conditional_dsbm_nonlinear.py."
     ) from exc
 
 

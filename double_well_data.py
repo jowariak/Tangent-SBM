@@ -1,93 +1,5 @@
 #!/usr/bin/env python3
-"""
-double_well_data.py
 
-Controlled nonlinear stochastic double-well benchmark for Tangent-SBM.
-
-Dynamics
---------
-We simulate the 1D overdamped stochastic double-well system
-
-    dX_t = [X_t - X_t^3 + eta(u)] dt + sigma dW_t
-
-with a saturating intervention-dependent tilt
-
-    eta(u) = tilt_scale * tanh(u).
-
-Equivalently, the potential is
-
-    V(x;u) = 1/4 x^4 - 1/2 x^2 - eta(u) x.
-
-For the default tilt_scale=0.30, |eta(u)| < 0.30, which remains below
-the critical tilt 2/(3*sqrt(3)) ~= 0.3849; therefore the benchmark
-retains a genuine double-well structure throughout the evaluation domain.
-
-Directional tangent / response
-------------------------------
-For scalar u and additive u-independent diffusion,
-
-    R_t = dX_t/du
-
-obeys
-
-    dR_t/dt
-      = (1 - 3 X_t^2) R_t
-        + tilt_scale * sech^2(u),
-
-with R_0 = 0 because X_0 is sampled independently of u.
-
-Unlike the Gaussian benchmark, R_T depends on the stochastic trajectory.
-Therefore the scientifically natural target used later by Tangent-SBM is
-the EXPECTED path response
-
-    J*(x0,u) = E_W[dX_T/du | x0,u].
-
-This script estimates that target with Monte Carlo simulator rollouts.
-
-Splits
-------
-Endpoint training:
-    train:
-        u in {-1, 0, +1}
-
-Evaluation:
-    test_seen:
-        fresh endpoints at {-1,0,+1}
-
-    test_id:
-        u ~ Uniform[-1,1]
-
-    test_ood_near:
-        |u| ~ Uniform[1.10,1.30]
-
-    test_ood_far:
-        |u| ~ Uniform[1.40,1.70]
-
-Response-only supervision:
-    anchor_response.pt:
-        expected J* on a subset of endpoint-anchor operating points
-
-    response_collocation.pt:
-        expected J* at continuous u ~ Uniform[-1.30,1.30]
-        with NO xT endpoint labels.
-
-Thus:
-    [-1,1]       endpoint-training range
-    [-1.3,1.3]   response-supervised range
-    [1.4,1.7]    fully OOD beyond both.
-
-Stored evaluation truth
------------------------
-For each test operating point (x0,u), simulator Monte Carlo estimates:
-    true_conditional_mean
-    true_right_well_prob = P(X_T > 0 | x0,u)
-    J_star_mean          = E[dX_T/du | x0,u]
-    true_finite_response = E[X_T(u+delta)-X_T(u) | x0,u]
-                           under common random numbers.
-
-The right-well probability explicitly evaluates the multimodal/bistable
-distribution rather than only its mean.
-"""
 
 import argparse
 import json
@@ -99,9 +11,9 @@ import numpy as np
 import torch
 
 
-# ============================================================
-# Reproducibility
-# ============================================================
+
+
+
 
 def set_seed(seed: int):
     random.seed(seed)
@@ -111,16 +23,16 @@ def set_seed(seed: int):
         torch.cuda.manual_seed_all(seed)
 
 
-# ============================================================
-# Simulator
-# ============================================================
+
+
+
 
 def tilt(u, tilt_scale):
     return tilt_scale * torch.tanh(u)
 
 
 def tilt_derivative(u, tilt_scale):
-    # sech^2(u) = 1 - tanh^2(u)
+    
     th = torch.tanh(u)
     return tilt_scale * (1.0 - th * th)
 
@@ -135,20 +47,7 @@ def simulate_paths(
     tilt_scale,
     return_tangent=True,
 ):
-    """
-    Euler-Maruyama simulator.
-
-    Shapes
-    ------
-    x0:    [..., 1]
-    u:     [..., 1]
-    noise: [steps, ..., 1]
-
-    Returns
-    -------
-    xT
-    RT if return_tangent
-    """
+    
     steps = noise.shape[0]
     dt = float(total_time) / float(steps)
     sqrt_dt = math.sqrt(dt)
@@ -169,7 +68,7 @@ def simulate_paths(
     )
 
     for k in range(steps):
-        # IMPORTANT: update tangent from the same pre-step x used by Euler.
+        
         if return_tangent:
             r = (
                 r
@@ -311,9 +210,9 @@ def sample_u(
     return signs * magnitude
 
 
-# ============================================================
-# Endpoint data
-# ============================================================
+
+
+
 
 def generate_endpoint_split(
     *,
@@ -391,8 +290,8 @@ def generate_endpoint_split(
             .cpu()
             .float(),
 
-        # One pathwise tangent for diagnostics only.
-        # Main Tangent-SBM supervision later uses MC expected response.
+        
+        
         "pathwise_J":
             RT.detach()
             .cpu()
@@ -404,9 +303,9 @@ def generate_endpoint_split(
     }
 
 
-# ============================================================
-# MC oracle statistics
-# ============================================================
+
+
+
 
 @torch.no_grad()
 def mc_oracle_batch(
@@ -421,15 +320,10 @@ def mc_oracle_batch(
     finite_delta,
     generator,
 ):
-    """
-    Estimate conditional statistics at fixed (x0,u).
-
-    Uses common random numbers for the base and u+delta finite-response
-    simulations to reduce Monte Carlo variance.
-    """
+    
     b = x0.shape[0]
 
-    # [B, MC, 1]
+    
     x0_rep = (
         x0[:, None, :]
         .expand(
@@ -622,9 +516,9 @@ def attach_mc_truth(
     return endpoint_obj
 
 
-# ============================================================
-# Response-only data
-# ============================================================
+
+
+
 
 def make_anchor_response(
     train_obj,
@@ -684,7 +578,7 @@ def make_anchor_response(
             base["u"],
     }
 
-    # Reuse attach helper by supplying only needed tensors.
+    
     x0_all = tmp["x0"].to(
         device
     )
@@ -849,9 +743,9 @@ def make_response_collocation(
     }
 
 
-# ============================================================
-# Finite-difference tangent sanity check
-# ============================================================
+
+
+
 
 @torch.no_grad()
 def finite_difference_check(
@@ -960,9 +854,9 @@ def finite_difference_check(
     }
 
 
-# ============================================================
-# Main
-# ============================================================
+
+
+
 
 def main():
     p = argparse.ArgumentParser()
@@ -1225,7 +1119,7 @@ def main():
             )
         )
 
-    # Save endpoints.
+    
     for split, obj in objects.items():
         torch.save(
             obj,
@@ -1370,7 +1264,7 @@ def main():
         f"{fd['mean_abs_error']:.6e}",
     )
 
-    # Aggregate simulator diagnostics.
+    
     diagnostics = {}
 
     for split in [

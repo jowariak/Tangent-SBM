@@ -1,51 +1,5 @@
 #!/usr/bin/env python3
-"""
-double_well_conditional_tsbm.py
 
-Conditional adaptation of Twisted Schrödinger Bridge Matching (TSBM)
-for the stochastic double-well benchmark used by Tangent-SBM.
-
-This script is deliberately built on the SAME conditional DSBM / GSBM
-scaffold used in the workshop experiments:
-
-  * b_theta(x,u,t) keeps intervention u persistent throughout the bridge;
-  * fork from Conditional-DSBM IMF-3 and continue IMF 4..7;
-  * use the same endpoint data and the same physical state potential as GSBM;
-  * never use J* response labels in training;
-  * evaluate with the unchanged workshop evaluator:
-        endpoint conditional-mean RMSE,
-        right-well probability RMSE,
-        normalized sensitivity error E_J,
-        finite-response RMSE,
-    on Seen / ID / Near-OOD / Far-OOD.
-
-The physical potential is
-
-    U(x,u) = x^4/4 - x^2/2 - 0.30*x*tanh(u)
-
-with -dU/dx equal to the deterministic double-well drift.
-
-Implementation notes
---------------------
-The reciprocal projection is the same variational Gaussian spline used by the
-conditional GSBM adapter. The Markovian projection follows the continuous-cost
-TSBM velocity target from the official TSBM implementation:
-
-forward:
-    (x1 - z_t)/(1-t) - beta * (1-s) * grad_x U(z_s,u)
-
-backward:
-    (x0 - z_t)/t     - beta * s       * grad_x U(z_s,u)
-
-where z_s is sampled from the fitted Gaussian path conditional on (t,z_t)
-with s>t forward and s<t backward. Multiple s samples per t Monte-Carlo
-approximate the conditional expectation in the TSBM projection.
-
-Reference implementation checked against:
-    maxencenoble/twisted-sb-matching
-    bridge/sde/diffusion_bridge.py, Twisted_BM_GeneralCost
-    bridge/spline/gaussian_path.py, EndPointGaussianPath.sample_s_given_t
-"""
 
 import argparse
 import csv
@@ -65,9 +19,9 @@ import double_well_conditional_dsbm as base
 import double_well_conditional_gsbm as gsbm
 
 
-# -----------------------------------------------------------------------------
-# Utilities
-# -----------------------------------------------------------------------------
+
+
+
 
 def setup_logging(path):
     path = Path(path)
@@ -93,24 +47,19 @@ def restore_rng_state(state):
 
 
 def grad_double_well_potential(x, u):
-    """Gradient dU/dx for U=x^4/4-x^2/2-0.30*x*tanh(u)."""
+    
     return x.pow(3) - x - 0.30 * torch.tanh(u)
 
 
-# -----------------------------------------------------------------------------
-# Conditional Gaussian-path sampling needed by TSBM
-# -----------------------------------------------------------------------------
+
+
+
 
 class ConditionalFrozenGaussianPath(gsbm.FrozenGaussianPath):
-    """Frozen fitted Gaussian path with z_s | (t,z_t) sampling."""
+    
 
     def _integral_inv_gamma_sq(self, t, s, n_quad=24):
-        """
-        Pairwise numerical quadrature of int_min^max 1/gamma(r)^2 dr.
-
-        t,s: (B,1), with either s>t (forward) or s<t (backward).
-        Returns (B,1), always nonnegative.
-        """
+        
         if t.ndim == 1:
             t = t[:, None]
         if s.ndim == 1:
@@ -127,9 +76,9 @@ class ConditionalFrozenGaussianPath(gsbm.FrozenGaussianPath):
             r = lo + a * (hi - lo)
             gamma, _ = gsbm._gamma_pairwise(self.gamma_ctrl, r, self.sigma)
             vals.append(1.0 / gamma.clamp_min(1e-5).pow(2))
-        vals = torch.stack(vals, dim=1)  # (B,Q,1)
+        vals = torch.stack(vals, dim=1)  
 
-        # trapezoid rule over normalized alpha, then multiply by interval length
+        
         h = 1.0 / float(len(alphas) - 1)
         integral_alpha = h * (
             0.5 * vals[:, 0]
@@ -139,12 +88,7 @@ class ConditionalFrozenGaussianPath(gsbm.FrozenGaussianPath):
         return (hi - lo) * integral_alpha
 
     def sample_s_given_t(self, t, z_t, s, n_quad=24):
-        """
-        Sample z_s | (t,z_t) from the fitted Gaussian path.
-
-        This is the scalar/batch-pair version of the official
-        EndPointGaussianPath.sample_s_given_t formula.
-        """
+        
         mean_t, _ = gsbm._interp_pairwise(self.mean_ctrl, t)
         mean_s, _ = gsbm._interp_pairwise(self.mean_ctrl, s)
         gamma_t, _ = gsbm._gamma_pairwise(self.gamma_ctrl, t, self.sigma)
@@ -159,9 +103,9 @@ class ConditionalFrozenGaussianPath(gsbm.FrozenGaussianPath):
         return mean_cond + std_cond * torch.randn_like(mean_cond)
 
 
-# -----------------------------------------------------------------------------
-# Conditional TSBM
-# -----------------------------------------------------------------------------
+
+
+
 
 class ConditionalTSBM(gsbm.ConditionalGSBM):
     def __init__(self, *args, num_s_per_t=2, conditional_quad=24, **kwargs):
@@ -174,7 +118,7 @@ class ConditionalTSBM(gsbm.ConditionalGSBM):
             raise ValueError("conditional_quad must be >=4")
 
     def _sample_s(self, t, fb):
-        """Sample continuous cost time s conditional on t, following official TSBM support."""
+        
         B = t.shape[0]
         eps = float(self.cfg.bridge_eps)
         T = 1.0
@@ -182,12 +126,12 @@ class ConditionalTSBM(gsbm.ConditionalGSBM):
         for _ in range(self.num_s_per_t):
             r = torch.rand(B, 1, device=t.device, dtype=t.dtype)
             if fb == "f":
-                # s in (t+eps, T-eps); t itself is sampled away from boundary.
+                
                 low = t + eps
                 high = torch.full_like(t, T - eps)
                 s = low + (high - low).clamp_min(eps) * r
             elif fb == "b":
-                # s in (eps, t-eps)
+                
                 low = torch.full_like(t, eps)
                 high = t - eps
                 s = low + (high - low).clamp_min(eps) * r
@@ -207,7 +151,7 @@ class ConditionalTSBM(gsbm.ConditionalGSBM):
             f"S={self.num_s_per_t}",
         )
 
-        # Same variational reciprocal projection as GSBM, same physical cost.
+        
         mean_ctrl_cpu, gamma_ctrl_cpu, reciprocal_loss = self._fit_all_paths(
             mean_init=mean_init,
             u=u,
@@ -232,7 +176,7 @@ class ConditionalTSBM(gsbm.ConditionalGSBM):
             mctrl = mean_ctrl_cpu[idx_cpu].to(self.device)
             gctrl = gamma_ctrl_cpu[idx_cpu].to(self.device)
 
-            # Match the TSBM paper/code support: stay 2eps away from both ends.
+            
             eps = float(self.cfg.bridge_eps)
             t = torch.rand(bsz, 1, device=self.device) * (1.0 - 4.0 * eps) + 2.0 * eps
 
@@ -254,12 +198,12 @@ class ConditionalTSBM(gsbm.ConditionalGSBM):
 
                 targets.append(target)
 
-            target_stack = torch.stack(targets, dim=1)  # (B,S,1)
+            target_stack = torch.stack(targets, dim=1)  
             pred = net(zt, bu, t).unsqueeze(1).expand_as(target_stack)
             sq = (pred - target_stack).pow(2)
             loss = sq.mean()
 
-            # Diagnostic corresponding to variance over sampled s targets.
+            
             tvar = target_stack.var(dim=1, unbiased=False).mean()
 
             opt.zero_grad(set_to_none=True)
@@ -289,9 +233,9 @@ class ConditionalTSBM(gsbm.ConditionalGSBM):
         }
 
 
-# -----------------------------------------------------------------------------
-# CLI / runner
-# -----------------------------------------------------------------------------
+
+
+
 
 def parse_args():
     p = argparse.ArgumentParser()

@@ -19,7 +19,7 @@ SOLVER_STEPS = 32
 class ConditionalFlowNet(base.ConditionalUNetDrift):
     def __init__(self, width):
         super().__init__(width)
-        # Inherited forward concatenates intervention and time to [z, x0].
+        
         self.e1 = base.Block(4, width)
 
     def forward(self, z, x0, a, t):
@@ -33,23 +33,23 @@ def flow_loss(net, x0, a, target, noise, t):
 
 
 class FlowSampler:
-    """Adapter for existing distribution/JVP/finite-response metric functions."""
+    
     def __init__(self, net, steps=SOLVER_STEPS):
         if steps < 1:
             raise ValueError('Positive solver steps required')
         self.net, self.steps = net, steps
-        # The shared SNS evaluator calls .eval() on both bridge-network names.
-        # They alias this single flow network; no backward model is introduced.
+        
+        
         self.net_f = self.net
         self.net_b = self.net
 
     def _noise_bank(self, x):
-        # Shared initial latent for a and a+delta*d finite differences.
+        
         return torch.randn_like(x)
 
     @torch.no_grad()
     def sample_sde(self, x0, a, fb='f', noise_bank=None):
-        # Interface name required by the original evaluator; this is an ODE.
+        
         if fb != 'f':
             raise ValueError('Conditional flow has no backward bridge network')
         z = self._noise_bank(x0) if noise_bank is None else noise_bank.clone()
@@ -62,7 +62,7 @@ class FlowSampler:
         return z
 
     def tangent_direction_rollout(self, x0, a, direction, noise_bank=None):
-        # Differentiate the SAME discrete midpoint solver; x0 and latent fixed.
+        
         z = self._noise_bank(x0) if noise_bank is None else noise_bank.clone()
         r = torch.zeros_like(z)
         h = 1.0 / self.steps

@@ -1,29 +1,5 @@
 #!/usr/bin/env python3
-"""
-prepare_pdebench_spread_budget_endpoints.py
 
-Stronger equal-simulator-budget control for PDEBench reaction-diffusion.
-
-Tangent-SBM consumes 648 extra official-simulator trajectories to form
-training response targets:
-    324 operating points x 2 perturbations each = 648 calls.
-
-This control spends exactly the same 648 simulator calls on ordinary endpoint
-training, but allocates them broadly across the response-supervision domain
-a in [-1.3, 1.3]^3 rather than at tiny +/- eps perturbations.
-
-Sampling:
-- Latin-hypercube-like stratification independently in each of 3 dimensions.
-- Values too close to any original anchor {-1,0,1}^3 are rejected/resampled.
-- Every extra endpoint uses a fresh PDEBench simulator seed disjoint from the
-  existing benchmark seeds.
-- Evaluation files are copied unchanged.
-- Normalization is inherited exactly from the original training set.
-
-This script imports the existing official generator:
-    pdebench_reaction_diffusion_official.py
-so it uses exactly the same official PDEBench simulator/configuration.
-"""
 
 from __future__ import annotations
 
@@ -61,7 +37,7 @@ def nearest_anchor_linf(a):
         list(itertools.product([-1.0, 0.0, 1.0], repeat=3)),
         dtype=np.float64,
     )
-    # [N,27,3] -> nearest L_inf
+    
     return np.min(
         np.max(np.abs(a[:, None, :] - anchors[None, :, :]), axis=2),
         axis=1,
@@ -71,10 +47,10 @@ def nearest_anchor_linf(a):
 def sample_spread_points(n, lo, hi, min_anchor_dist, seed):
     rng = np.random.default_rng(seed)
 
-    # Start stratified.
+    
     a = latin_hypercube(n, 3, lo, hi, rng)
 
-    # Resample only points too close to original anchors.
+    
     bad = nearest_anchor_linf(a) < min_anchor_dist
     rounds = 0
     while bad.any():
@@ -237,7 +213,7 @@ def main():
 
     torch.save(augmented, out / "train.pt")
 
-    # Copy evaluation / response files unchanged so the standard evaluator works.
+    
     for name in [
         "test_seen.pt",
         "test_id.pt",

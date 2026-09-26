@@ -51,7 +51,7 @@ def main():
                     if cache.exists():
                         pred=base.safe_load(cache)
                     else:
-                        # Separate deterministic batch streams, identical across methods.
+                        
                         base.set_seed(880000+seed*100000+50000+split_id*1000+start)
                         x=d['x0'][start:start+2].to(device);a=d['a'][start:start+2].to(device);v=d['direction'][start:start+2].to(device)
                         total=torch.zeros_like(x,device='cpu',dtype=torch.float64)

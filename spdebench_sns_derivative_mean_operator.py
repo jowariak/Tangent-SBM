@@ -15,7 +15,7 @@ import spdebench_sns_conditional_dsbm_v2 as base
 
 
 def predict(net, x, a):
-    # Reuse the drift UNet as a terminal regressor with constant time channel.
+    
     return net(x, a, x.new_zeros((x.shape[0], 1)))
 
 
@@ -35,7 +35,7 @@ def load_responses(path, mean, std):
 
 
 def response_batch(anchor, colloc, generator, device):
-    # Same 3 anchor + 5 collocation mixture as the frozen batch-eight bridge.
+    
     pieces = []
     for src, size in [(anchor, 3), (colloc, 5)]:
         idx = torch.randint(len(src['x0']), (size,), generator=generator)
@@ -51,7 +51,7 @@ def response_loss(net, batch):
 
 
 def response_due(step, updates, inner_steps):
-    # Last 2*inner_steps optimizer updates; 160 responses for inner_steps=800.
+    
     local = step - (updates - 2 * inner_steps)
     return local > 0 and local % 10 == 0
 
@@ -63,8 +63,8 @@ def train(args):
         raise ValueError('Expected the frozen sigma=1.4 IMF-3 reference checkpoint')
     cfg = base.Config(**reference['config'])
     cfg.seed = args.seed
-    # Match all forward+backward optimizer updates across five IMF iterations.
-    # Network weights are initialized from scratch; no fork weights are loaded.
+    
+    
     updates = 2 * 5 * cfg.inner_steps
     directory = args.run_root / f'seed_{args.seed}'
     if directory.exists() and any(directory.iterdir()):
@@ -166,7 +166,7 @@ def evaluate(args):
         raise FileExistsError(f'Result exists: {output}')
     device = base.resolve_device(args.device)
     seeds = [32, 42, 52]
-    # Validate all checkpoints before opening FINAL2.
+    
     checkpoints = []
     for seed in seeds:
         path = args.run_root / f'seed_{seed}' / 'final_model.pt'

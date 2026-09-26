@@ -1,36 +1,5 @@
 #!/usr/bin/env python3
-"""
-Direct and derivative-informed deterministic operator baselines for the
-PDEBench reaction-diffusion intervention benchmark.
 
-This script deliberately reuses the exact ConditionalUNetDrift architecture
-and dataset loader from pdebench_reaction_diffusion_conditional_dsbm.py.
-
-Modes
------
-1) Direct conditional operator:
-       lambda_sens = 0
-       (X0, a) -> XT
-       endpoint supervision only
-
-2) Derivative-informed conditional operator:
-       lambda_sens > 0
-       endpoint loss + directional JVP response supervision during a fixed
-       final sensitivity window. By default, 800 final steps with
-       sens_every=10 gives 80 response-loss updates, matching the PDEBench
-       Tangent-SBM continuation budget.
-
-The response-only supervision files are the same anchor/collocation files used
-by the Tangent-SBM PDEBench experiment. No endpoint labels are read from those
-files.
-
-Evaluation follows the existing PDEBench benchmark conventions:
-- terminal-field relative L2 / RMSE
-- directional sensitivity relative error E_J
-- finite-response error at metadata["finite_delta"] (default 0.25)
-
-The direct model is deterministic, so no Monte Carlo averaging is needed.
-"""
 
 import argparse
 import csv
@@ -49,9 +18,9 @@ import torch.nn.functional as F
 import pdebench_reaction_diffusion_conditional_dsbm as base
 
 
-# ---------------------------------------------------------------------
-# Utilities
-# ---------------------------------------------------------------------
+
+
+
 
 def safe_torch_load(path, map_location="cpu"):
     try:
@@ -131,19 +100,12 @@ def vector_rel_error(pred, true):
     return (num / den).mean()
 
 
-# ---------------------------------------------------------------------
-# Model
-# ---------------------------------------------------------------------
+
+
+
 
 class DirectConditionalOperator(nn.Module):
-    """
-    Uses exactly the same U-Net architecture as one DSBM drift network.
-
-    base.ConditionalUNetDrift expects (field, intervention, bridge_time).
-    For this deterministic endpoint operator we give it a fixed time channel
-    t=1, so parameter count / convolutional architecture stays identical to
-    one conditional DSBM drift network.
-    """
+    
 
     def __init__(self, base_channels=32):
         super().__init__()
@@ -158,7 +120,7 @@ class DirectConditionalOperator(nn.Module):
         return self.net(x0, a, t)
 
     def directional_jvp(self, x0, a, direction, create_graph=False):
-        # x0 is held fixed. We differentiate only with respect to intervention a.
+        
         def f(ai):
             return self.forward(x0, ai)
 
@@ -172,9 +134,9 @@ class DirectConditionalOperator(nn.Module):
         return jv
 
 
-# ---------------------------------------------------------------------
-# Training helpers
-# ---------------------------------------------------------------------
+
+
+
 
 def cpu_randint(n, b, generator):
     return torch.randint(
@@ -229,7 +191,7 @@ def response_batch(anchor, colloc, total, anchor_fraction, generator, device):
     for k in ["x0", "a", "direction", "Jv_star"]:
         out[k] = torch.cat([p[k] for p in pieces], dim=0)
 
-    # Shuffle with the sensitivity RNG only.
+    
     perm_cpu = torch.randperm(
         out["x0"].shape[0],
         generator=generator,
@@ -299,8 +261,8 @@ def train_model(
     anchor_fraction,
     sens_start_step,
 ):
-    # Separate generators ensure the endpoint minibatch sequence is identical
-    # between lambda=0 and lambda>0 runs with the same seed.
+    
+    
     endpoint_gen = torch.Generator(device="cpu").manual_seed(seed + 500001)
     sens_gen = torch.Generator(device="cpu").manual_seed(seed + 700001)
 
@@ -387,9 +349,9 @@ def train_model(
     return hist, time.time() - start
 
 
-# ---------------------------------------------------------------------
-# Evaluation
-# ---------------------------------------------------------------------
+
+
+
 
 @torch.no_grad()
 def endpoint_metrics(model, data, eval_batch_size, device, metadata):
@@ -421,8 +383,8 @@ def endpoint_metrics(model, data, eval_batch_size, device, metadata):
 
 
 def sensitivity_metrics(model, data, eval_batch_size, device, metadata):
-    # Match the existing DSBM evaluator: sensitivity is evaluated on the
-    # first min(eval_batch_size, N) examples because it is the expensive metric.
+    
+    
     n = min(eval_batch_size, data["x0"].shape[0])
 
     x0 = data["x0"][:n].to(device)
@@ -448,7 +410,7 @@ def sensitivity_metrics(model, data, eval_batch_size, device, metadata):
     return {
         "directional_j_rel_error": float(rel.cpu()),
         "directional_j_rmse_norm": float(rmse.cpu()),
-        # Deterministic operator: pathwise and mean response coincide.
+        
         "directional_j_pathwise_rmse_norm": float(rmse.cpu()),
         "directional_j_rmse_raw": float(raw.cpu()),
     }
@@ -523,9 +485,9 @@ def evaluate_split(
     return out
 
 
-# ---------------------------------------------------------------------
-# Main
-# ---------------------------------------------------------------------
+
+
+
 
 def parse_args():
     p = argparse.ArgumentParser()

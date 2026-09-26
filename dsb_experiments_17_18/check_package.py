@@ -1,4 +1,4 @@
-"""Check the extracted bundle before importing training dependencies."""
+
 import hashlib
 import json
 from pathlib import Path

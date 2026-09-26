@@ -17,8 +17,8 @@ def fields(m,record,mean,std,device,seed):
 
 def generate(args):
     dev=base.resolve_device(args.device)
-    # Always first stored condition of every split, for every training seed.
-    # No metrics or image appearance enter selection.
+    
+    
     for seed in SEEDS:
         for method in METHODS:
             m,mean,std=model(args,method,seed,dev)

@@ -21,7 +21,7 @@ def main():
     if a.mode in ['setup','smoke','train','all']:
         run('fetch_official.py')
         if a.experiment=='11':run('fetch_tsbm.py')
-        # Fixed synthetic check: production options cannot weaken test settings.
+        
         run(script,'smoke')
     if a.mode in ['train','all']:
         for seed in [32,42,52]:run(script,'train','--seed',str(seed),*extra)

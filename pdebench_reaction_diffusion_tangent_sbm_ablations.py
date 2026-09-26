@@ -9,7 +9,7 @@ import pdebench_reaction_diffusion_conditional_dsbm as base
 
 
 def safe_torch_load(path, map_location="cpu"):
-    """Load checkpoints safely across PyTorch versions."""
+    
     try:
         return torch.load(
             path,
@@ -150,7 +150,7 @@ def gradient_sanity(model,anchor,colloc):
 
 
 def subset_response(source, fraction, seed):
-    """Random deterministic subset; preserves original response-domain support."""
+    
     fraction = float(fraction)
     if not (0.0 < fraction <= 1.0):
         raise ValueError("--response-fraction must be in (0,1].")
@@ -165,11 +165,7 @@ def subset_response(source, fraction, seed):
 
 
 def corrupt_response_targets(source, mode, seed):
-    """
-    Corrupt only Jv_star while preserving the operating point
-    (x0, a, intervention direction). Applied independently to anchor
-    and continuous response sets.
-    """
+    
     out = {k: v.clone() for k, v in source.items()}
 
     if mode == "correct":
@@ -183,7 +179,7 @@ def corrupt_response_targets(source, mode, seed):
         n = out["Jv_star"].shape[0]
         g = torch.Generator(device="cpu").manual_seed(int(seed))
         perm = torch.randperm(n, generator=g)
-        # Avoid the rare identity permutation for tiny sets.
+        
         if n > 1 and torch.equal(perm, torch.arange(n)):
             perm = torch.roll(perm, shifts=1)
         out["Jv_star"] = out["Jv_star"][perm].clone()
@@ -221,15 +217,15 @@ def main():
     anchor=load_response(data_dir/"anchor_response.pt")
     colloc=load_response(data_dir/"response_collocation.pt")
 
-    # Response-amount ablation changes ONLY continuous collocation count.
+    
     colloc=subset_response(
         colloc,
         args.response_fraction,
         seed=args.seed + 810001,
     )
 
-    # Target-correctness ablation corrupts the target alignment in BOTH
-    # response-supervision sources, while leaving endpoint data unchanged.
+    
+    
     anchor=corrupt_response_targets(
         anchor,
         args.target_mode,

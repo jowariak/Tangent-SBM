@@ -1,20 +1,5 @@
 #!/usr/bin/env python3
-"""
-SPDEBench stochastic Navier--Stokes intervention-response dataset generator.
 
-Uses the official SPDEBench 2D stochastic Navier--Stokes solver. The intervention is
-    a = log2(nu / nu0),   nu(a) = nu0 * 2**a
-with nominal nu0=1e-4. The physical Q-Wiener path remains latent: models see only
-(x0, a), so repeated simulator calls define p(x_T | x0, a).
-
-Modes:
-  pilot     viscosity stability sweep
-  generate  full endpoint/response/evaluation dataset
-
-Expected SPDEBench checkout:
-  <root>/data_gen/src/generator_sns.py
-  <root>/data_gen/src/random_forcing.py
-"""
 
 from __future__ import annotations
 
@@ -35,7 +20,7 @@ import torch
 
 @dataclass
 class SimConfig:
-    # Official SPDEBench NS defaults.
+    
     nu0: float = 1e-4
     alpha: float = 3.0
     tau: float = 3.0
@@ -47,7 +32,7 @@ class SimConfig:
     T: float = 1.0
     delta_t: float = 1e-3
 
-    # Response benchmark design.
+    
     eps_a: float = 0.03
     finite_delta_a: float = 0.25
 
@@ -169,7 +154,7 @@ class SNSimulator:
         }
 
     def sample_initial_conditions(self, n: int):
-        # Matches the varying-u0 construction in the official generator.
+        
         w_star = self.grf.sample(1)
         return w_star + self.grf.sample(n), w_star
 
@@ -198,7 +183,7 @@ class SNSimulator:
 
     @torch.no_grad()
     def centered_fd(self, x0, a, eps, mc, batch_size):
-        """Common-noise centered FD. Returns mean [C,H,W], samples [C,mc,H,W]."""
+        
         C = len(x0)
         xr = x0.repeat_interleave(mc, 0)
         ar = a.reshape(-1).repeat_interleave(mc)
@@ -217,7 +202,7 @@ class SNSimulator:
 
     @torch.no_grad()
     def finite_response(self, x0, a, delta, mc, batch_size):
-        """Common-noise E[X_T(a+delta)-X_T(a)]."""
+        
         C = len(x0)
         xr = x0.repeat_interleave(mc, 0)
         ar = a.reshape(-1).repeat_interleave(mc)

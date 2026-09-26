@@ -42,9 +42,9 @@ def checkpoint_path(args,method,seed):
 def audit_tangent(ck):
     expected=dict(fork_imf=3,lambda_sens=1000,sens_batch_size=8,sens_pairs=1,sens_every=10)
     actual={k:ck.get(k) for k in expected};origin='explicit checkpoint sens_pairs'
-    # The original single-pair trainer predates the sens_pairs field. Its saved
-    # objective explicitly states two independent rollouts, i.e. one cross pair.
-    # Do not apply this inference to multipair objectives or explicit mismatches.
+    
+    
+    
     if 'sens_pairs' not in ck and ck.get('response_objective')=='conditional_mean_two_independent_rollout_cross':
         actual['sens_pairs']=1;origin='legacy two-independent-rollout objective (one cross pair)'
     for key,value in expected.items():

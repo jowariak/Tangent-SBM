@@ -5,7 +5,7 @@ from common import *
 class UnconditionalDrift(base.ConditionalUNetDrift):
     def __init__(self,width):
         super().__init__(width)
-        self.e1=base.Block(2,width)  # state + time only: no intervention channel
+        self.e1=base.Block(2,width)  
     def forward(self,x,a,t):
         B,_,H,W=x.shape
         time=t.reshape(B,1,1,1).expand(-1,-1,H,W)
@@ -24,11 +24,11 @@ class UnconditionalDSBM(base.ConditionalFieldDSBM):
     def regenerate_coupling(self,data):
         if self.prev_fb is not None:return super().regenerate_coupling(data)
         x0=data['x0'].to(self.device);x1=data['x1'].to(self.device)
-        # First bridge uses an independent empirical marginal coupling.
+        
         order=torch.randperm(len(x1),device=self.device)
         return x0,x1[order],torch.zeros(len(x0),1,device=self.device)
     def tangent_direction_rollout(self,x0,a,direction,noise_bank=None):
-        # Exact derivative w.r.t. absent intervention input. Verified in smoke.
+        
         return torch.zeros_like(x0)
 
 def setup(args,seed):
@@ -109,8 +109,8 @@ def smoke(args):
     for fb in ['b','f']:m.train_pass(data,fb,lambda *x:print(*x,flush=True))
     m.net_f.eval();x=data['x0'][:2].to(dev);a=torch.zeros(2,1,device=dev);nb=m._noise_bank(x)
     y=m.sample_sde(x,a,noise_bank=nb);other=m.sample_sde(x,a+1,noise_bank=nb)
-    # Repeated GPU kernels need not be bitwise identical. The CPU check below
-    # retains exact equality for the architectural intervention-invariance test.
+    
+    
     torch.testing.assert_close(y,other,rtol=1e-5,atol=1e-6)
     j=base.ConditionalFieldDSBM.tangent_direction_rollout(m,x,a,torch.ones_like(a),nb)
     torch.testing.assert_close(j,torch.zeros_like(j),rtol=0,atol=0)

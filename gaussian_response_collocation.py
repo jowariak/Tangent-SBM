@@ -1,40 +1,5 @@
 #!/usr/bin/env python3
-"""
-gaussian_response_collocation.py
 
-Generate RESPONSE-ONLY supervision for the nonlinear conditional-Gaussian
-benchmark.
-
-This DOES NOT add any endpoint observations.
-
-Existing endpoint training remains:
-    u in {-1, 0, +1}
-
-This script creates additional tuples:
-    (x0, u, J_star(u))
-
-for u sampled across a broader response-supervision domain, default:
-    u ~ Uniform[-1.5, 1.5]
-
-No xT is generated or saved for these collocation samples.
-
-Why this is useful
-------------------
-Tangent-SBM is designed to use mechanistic response information even where
-endpoint observations are unavailable.  This lets us test whether broader
-coverage of J*(u) improves extrapolation beyond the sparse endpoint anchors.
-
-Output:
-    runs/gaussian_nonlinear_data/response_collocation.pt
-
-Run:
-    python gaussian_response_collocation.py \
-        --data-dir runs/gaussian_nonlinear_data \
-        --n-collocation 12000 \
-        --u-min -1.5 \
-        --u-max 1.5 \
-        --seed 32
-"""
 
 import argparse
 import json
@@ -68,10 +33,7 @@ def oracle_jacobian(
     B2,
     B3,
 ):
-    """
-    Scalar-u benchmark.
-    Returns [N, state_dim, 1].
-    """
+    
     deriv = (
         B1.T
         + 2.0 * u * B2.T
@@ -175,7 +137,7 @@ def main():
         dtype=torch.float32,
     )
 
-    # Positive-definite sanity check.
+    
     torch.linalg.cholesky(
         sigma0
     )
@@ -216,7 +178,7 @@ def main():
         "u": u.float(),
         "J_star": J_star.float(),
 
-        # Deliberately explicit: there are NO endpoint labels here.
+        
         "response_only": True,
 
         "metadata": {

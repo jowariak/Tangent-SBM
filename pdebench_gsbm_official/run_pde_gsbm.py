@@ -56,11 +56,7 @@ class ConditionalField(torch.nn.Module):
 
 
 class SpatialCost:
-    """Raw sum, matching official build_loss_fn's summed control energy.
-
-    Normalized channels, unit pixel spacing, nonperiodic adjacent differences.
-    This is a declared smoothness prior, not a PDE residual.
-    """
+    
     def __init__(self,beta,shape):self.beta=beta;self.shape=tuple(shape)
     def __call__(self,x,t,gpath):
         v=x.reshape(*x.shape[:-1],*self.shape)
@@ -74,7 +70,7 @@ def fit_config(args):
 
 
 def random_conditional_pairs(x0,x1,a):
-    """Independent empirical coupling within each exact intervention anchor."""
+    
     out=x1.clone()
     for anchor in torch.unique(a,dim=0):
         idx=torch.where((a==anchor).all(1))[0]
@@ -111,8 +107,8 @@ class GSBM:
             path=gp.EndPointGaussianPath(t,xt,st,raw_gamma,self.sigma,self.basedrift)
             loss=gp.build_loss_fn(path,self.sigma,cost,ccfg)
             print(f'pass {pass_id}: official CondSOC pairs {start+1}-{stop}/{len(a)}',flush=True)
-            # Match upstream validation_step: optimize the coupling's direction,
-            # then use the fitted path to match the next direction.
+            
+            
             with torch.enable_grad():
                 fit=gp.fit(ccfg,path,previous or 'fwd',loss,verbose=False)
             finite(path.mean.xt,'fitted mean');finite(path.gamma.xt,'fitted variance')
@@ -131,7 +127,7 @@ class GSBM:
             path=gp.EndPointGaussianPath(population['mean_t'].to(self.device),
                 population['mean_xt'][idx].to(self.device),population['gamma_s'].to(self.device),
                 population['gamma_xs'][idx].to(self.device),self.sigma,self.basedrift)
-            # Same sampling and diagonal pairing as upstream sample_gpath (BM).
+            
             t=torch.rand(len(idx),device=self.device)*(1-2e-4)+1e-4
             with torch.no_grad():
                 xt=path.sample_xt(t,N=1)
@@ -166,7 +162,7 @@ def train(args):
     metadata=json.loads((args.data_dir/'metadata.json').read_text())
     cfg=base.Config(seed=args.seed,total_imf=args.cycles,fork_imf=0,inner_steps=args.match_steps)
     base.set_seed(args.seed);model=GSBM(cfg,(2,128,128),dev)
-    # Persistent AdamW states for both networks, as in the authors' joint optimizer.
+    
     optimizer=torch.optim.AdamW([p for net in model.nets.values() for p in net.parameters() if p.requires_grad],
                                lr=cfg.lr,weight_decay=1e-5,eps=1e-8)
     directory.mkdir(parents=True,exist_ok=True);history=[];previous=None
@@ -180,8 +176,8 @@ def train(args):
         history.append(dict(pass_number=k+1,direction=direction,cond_soc_direction=previous or 'fwd',
                             reciprocal=reciprocal,matching=matching))
         previous=direction;del population
-        # Save portable EMA inference weights after each completed pass. Latest
-        # file is a progress artifact; only final.pt is accepted by evaluation.
+        
+        
         weights={}
         for d,net in model.nets.items():
             net.eval();weights[d]={name:p.detach().cpu().clone() for name,p in net.model.net.state_dict().items()}
@@ -200,7 +196,7 @@ def train(args):
 
 
 class EvalModel(base.ConditionalFieldDSBM):
-    """Use existing PDEBench CRN/JVP metric semantics with exported EMA fields."""
+    
     def __init__(self,ck,dev):
         cfg=base.Config(**ck['config']);super().__init__(cfg,(2,128,128),3,dev)
         self.net_f.load_state_dict(ck['weights']['fwd']);self.net_b.load_state_dict(ck['weights']['bwd'])
@@ -252,7 +248,7 @@ def smoke(args):
         model.match(pop,d,opt,tiny,k+1)
         if not any(not torch.equal(x,y) for x,y in zip(before,model.nets[d].model.parameters())):raise RuntimeError('No network update')
         previous=d
-    # Export adapter + JVP against finite differences, with a fixed Brownian bank.
+    
     weights={}
     for d,net in model.nets.items():
         net.eval();weights[d]=net.model.net.state_dict()
@@ -264,8 +260,8 @@ def smoke(args):
     fd=(adapter.sample_sde(x,a+eps*d,noise_bank=nb)-adapter.sample_sde(x,a-eps*d,noise_bank=nb))/(2*eps)
     finite(j,'evaluation JVP');finite(fd,'evaluation FD')
     torch.testing.assert_close(j,fd,rtol=.05,atol=.003)
-    # Verify official SDE sampling and evaluation adapter agree under the same
-    # sequence of noise draws (layout is flattened only in the official sampler).
+    
+    
     model.nets['fwd'].eval();base.set_seed(998)
     official=sdeint(x.flatten(1),lambda xx,t:model.nets['fwd'](xx,t,a),lambda x,t:cfg.reference_sigma,
                     'fwd',nfe=cfg.num_steps,log_steps=2)['xs'][:,-1].reshape_as(x)

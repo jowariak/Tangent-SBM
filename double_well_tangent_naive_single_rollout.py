@@ -1,21 +1,5 @@
 #!/usr/bin/env python3
-"""
-Naive expected-response ablation for double well.
 
-Same fork, architecture, lambda, response data, and training schedule as the
-canonical two-independent-rollout Tangent-SBM, except expected-response loss is
-
-    E[(J - J*)^2]
-
-from ONE stochastic tangent rollout.
-
-For a mean target J*, this objective equals
-    (E[J]-J*)^2 + Var(J),
-so it additionally penalizes legitimate pathwise response variance.
-
-Implementation reuses double_well_tangent_sbm_v2.py and changes ONLY
-expected_response_loss().
-"""
 
 import torch
 import double_well_tangent_sbm_v2 as impl
@@ -65,7 +49,7 @@ class NaiveSingleRolloutTangent(impl.TangentDoubleWellDSBM):
         }
 
 
-# The imported main() resolves this global class at runtime.
+
 impl.TangentDoubleWellDSBM = NaiveSingleRolloutTangent
 
 if __name__ == "__main__":

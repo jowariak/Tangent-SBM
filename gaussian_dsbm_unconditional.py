@@ -1,33 +1,5 @@
 #!/usr/bin/env python3
-"""
-gaussian_dsbm_unconditional.py
 
-Plain / unconditional DSBM baseline for the nonlinear conditional-Gaussian
-Tangent-SBM benchmark.
-
-This baseline deliberately does NOT receive intervention u anywhere in the
-drift:
-    b_theta(x,t)
-
-It uses the same endpoint pairs (x0, xT), bridge discretization, network width,
-IMF count, optimizer budget, seed, and evaluation splits as the conditional
-baseline, but removes u from the model input.
-
-Because the model has no u input:
-    dY_theta/du = 0
-
-so for response evaluation we report:
-    J_theta = 0
-against the exact samplewise J*(u), and the model's predicted finite response
-to changing u is identically zero.
-
-Recommended matched run:
-    python gaussian_dsbm_unconditional.py \
-        --data-dir runs/gaussian_nonlinear_data \
-        --run-root runs/gaussian_dsbm_only_imf7 \
-        --seed 32 \
-        --total-imf 7
-"""
 
 import argparse
 import csv
@@ -54,9 +26,9 @@ except ImportError as exc:
     ) from exc
 
 
-# ============================================================
-# Utilities
-# ============================================================
+
+
+
 
 def set_seed(seed: int):
     random.seed(seed)
@@ -87,9 +59,9 @@ def log(*args):
     logging.info(" ".join(str(x) for x in args))
 
 
-# ============================================================
-# Config
-# ============================================================
+
+
+
 
 @dataclass
 class Config:
@@ -114,14 +86,12 @@ class Config:
     finite_delta: float = 0.25
 
 
-# ============================================================
-# Unconditional drift
-# ============================================================
+
+
+
 
 class UnconditionalDriftNet(nn.Module):
-    """
-    b_theta(x,t)
-    """
+    
 
     def __init__(
         self,
@@ -163,9 +133,9 @@ class UnconditionalDriftNet(nn.Module):
         )
 
 
-# ============================================================
-# Plain DSBM / IMF
-# ============================================================
+
+
+
 
 class UnconditionalDSBM:
 
@@ -205,9 +175,9 @@ class UnconditionalDSBM:
             "prev_fb": self.prev_fb,
         }
 
-    # --------------------------------------------------------
-    # Reciprocal bridge tuple
-    # --------------------------------------------------------
+    
+    
+    
 
     def get_train_tuple(
         self,
@@ -264,9 +234,9 @@ class UnconditionalDSBM:
 
         return zt, t, target
 
-    # --------------------------------------------------------
-    # Learned SDE rollout
-    # --------------------------------------------------------
+    
+    
+    
 
     def _noise_bank(
         self,
@@ -349,9 +319,9 @@ class UnconditionalDSBM:
 
         return x
 
-    # --------------------------------------------------------
-    # IMF coupling regeneration
-    # --------------------------------------------------------
+    
+    
+    
 
     @torch.no_grad()
     def regenerate_coupling(
@@ -387,9 +357,9 @@ class UnconditionalDSBM:
             z1.detach(),
         )
 
-    # --------------------------------------------------------
-    # One Markov projection
-    # --------------------------------------------------------
+    
+    
+    
 
     def train_pass(
         self,
@@ -500,9 +470,9 @@ class UnconditionalDSBM:
         }
 
 
-# ============================================================
-# Evaluation
-# ============================================================
+
+
+
 
 @torch.no_grad()
 def mc_mean_prediction(
@@ -629,11 +599,7 @@ def zero_response_metrics(
     cfg,
     device,
 ):
-    """
-    Plain DSBM has no u input, hence by construction:
-        J_theta = dY/du = 0
-    and changing u does not change its predicted rollout.
-    """
+    
     n = min(
         cfg.eval_batch_size,
         data["x0"].shape[0],
@@ -694,7 +660,7 @@ def zero_response_metrics(
         * v
     )
 
-    # DSBM-only predicted change is exactly zero because u is absent.
+    
     pred_change = torch.zeros_like(
         x0
     )
@@ -789,9 +755,9 @@ def evaluate_split(
     return out
 
 
-# ============================================================
-# Checkpoint/convergence
-# ============================================================
+
+
+
 
 def save_checkpoint(
     path,
@@ -924,9 +890,9 @@ def convergence_metrics(
         cfg.eval_batch_size = old_batch
 
 
-# ============================================================
-# CLI/main
-# ============================================================
+
+
+
 
 def parse_args():
     p = argparse.ArgumentParser()

@@ -1,29 +1,5 @@
 #!/usr/bin/env python3
-"""
-gaussian_conditional_dsbm_nonlinear.py
 
-Conditional DSBM / IMF baseline for the nonlinear conditional-Gaussian
-Tangent-SBM benchmark produced by gaussian_nonlinear_data.py.
-
-The bridge receives u persistently through b_theta(x,u,t), but receives
-NO J* supervision during training.
-
-This script:
-  - trains ordinary conditional DSBM for N IMF iterations,
-  - saves every IMF checkpoint,
-  - saves IMF-3 as the future Tangent-SBM fork,
-  - writes per-IMF TRAIN convergence diagnostics,
-  - evaluates seen-anchor, in-range interpolation, near-OOD, far-OOD splits,
-  - evaluates the learned samplewise Jacobian against exact J*(u),
-  - evaluates finite intervention response using the exact analytic oracle.
-
-Run:
-    python gaussian_conditional_dsbm_nonlinear.py \
-        --data-dir runs/gaussian_nonlinear_data \
-        --run-root runs/gaussian_conditional_nonlinear \
-        --seed 32 \
-        --total-imf 5
-"""
 
 import argparse
 import csv
@@ -42,9 +18,9 @@ import torch
 import torch.nn as nn
 
 
-# ============================================================
-# Utilities
-# ============================================================
+
+
+
 
 def set_seed(seed: int) -> None:
     random.seed(seed)
@@ -92,9 +68,9 @@ def tensor_to_list(x: torch.Tensor):
     )
 
 
-# ============================================================
-# Logging
-# ============================================================
+
+
+
 
 def setup_logging(path: Path):
     path.parent.mkdir(
@@ -133,9 +109,9 @@ def log(*args):
     )
 
 
-# ============================================================
-# Config
-# ============================================================
+
+
+
 
 @dataclass
 class Config:
@@ -163,9 +139,9 @@ class Config:
     finite_delta: float = 0.25
 
 
-# ============================================================
-# Dataset / oracle
-# ============================================================
+
+
+
 
 SPLITS = [
     "train",
@@ -203,7 +179,7 @@ def load_dataset(
             "x1": obj["xT"].float(),
             "true_mean":
                 obj["true_conditional_mean"].float(),
-            # [N, state_dim, intervention_dim]
+            
             "J_star":
                 obj["J_star"].float(),
         }
@@ -347,9 +323,9 @@ def oracle_jacobian(
     return deriv.unsqueeze(-1)
 
 
-# ============================================================
-# Conditional drift
-# ============================================================
+
+
+
 
 class ConditionalDriftNet(nn.Module):
 
@@ -414,9 +390,9 @@ class ConditionalDriftNet(nn.Module):
         )
 
 
-# ============================================================
-# Conditional DSBM
-# ============================================================
+
+
+
 
 class ConditionalDSBM:
 
@@ -482,9 +458,9 @@ class ConditionalDSBM:
             None,
         )
 
-    # --------------------------------------------------------
-    # Reciprocal bridge matching sample
-    # --------------------------------------------------------
+    
+    
+    
 
     def get_train_tuple(
         self,
@@ -550,9 +526,9 @@ class ConditionalDSBM:
             target,
         )
 
-    # --------------------------------------------------------
-    # Learned SDE rollout
-    # --------------------------------------------------------
+    
+    
+    
 
     def _noise_bank(
         self,
@@ -645,14 +621,14 @@ class ConditionalDSBM:
                 * noise_bank[k]
             )
 
-            # Baseline rollout/eval does not need path graph.
+            
             x = x.detach()
 
         return x
 
-    # --------------------------------------------------------
-    # IMF coupling regeneration
-    # --------------------------------------------------------
+    
+    
+    
 
     @torch.no_grad()
     def regenerate_coupling(
@@ -702,9 +678,9 @@ class ConditionalDSBM:
             u,
         )
 
-    # --------------------------------------------------------
-    # One Markov projection pass
-    # --------------------------------------------------------
+    
+    
+    
 
     def train_pass(
         self,
@@ -830,9 +806,9 @@ class ConditionalDSBM:
                 )
         }
 
-    # --------------------------------------------------------
-    # Learned tangent evaluation
-    # --------------------------------------------------------
+    
+    
+    
 
     def tangent_rollout(
         self,
@@ -840,13 +816,7 @@ class ConditionalDSBM:
         u,
         noise_bank=None,
     ):
-        """
-        Evaluate samplewise dX_T/du of the learned forward SDE.
-
-        IMPORTANT:
-        This is diagnostic only in the conditional baseline.
-        J* is never used to train this script.
-        """
+        
         cfg = self.cfg
 
         dt = (
@@ -960,9 +930,9 @@ class ConditionalDSBM:
         )
 
 
-# ============================================================
-# Metrics
-# ============================================================
+
+
+
 
 @torch.no_grad()
 def mc_mean_prediction(
@@ -1099,11 +1069,7 @@ def sensitivity_metrics(
     cfg,
     device,
 ):
-    """
-    Samplewise response metric:
-      compare E_omega[J_theta(u,omega)] against exact J*(u)
-      for each evaluated sample, then aggregate over samples.
-    """
+    
     n = min(
         cfg.eval_batch_size,
         data["x0"].shape[0],
@@ -1137,7 +1103,7 @@ def sensitivity_metrics(
                 ).detach()
             )
 
-    # [N,state_dim,d]
+    
     J_pred = torch.stack(
         Js,
         dim=0,
@@ -1174,8 +1140,8 @@ def sensitivity_metrics(
                 .cpu()
             ),
 
-        # Useful summaries for logs, while preserving the full
-        # samplewise metric above.
+        
+        
         "mean_predicted_jacobian":
             tensor_to_list(
                 J_pred.mean(dim=0)
@@ -1351,9 +1317,9 @@ def evaluate_split(
     return out
 
 
-# ============================================================
-# Convergence diagnostics
-# ============================================================
+
+
+
 
 def convergence_metrics(
     model,
@@ -1499,9 +1465,9 @@ def write_convergence(
         writer.writerows(rows)
 
 
-# ============================================================
-# Checkpoint
-# ============================================================
+
+
+
 
 def save_checkpoint(
     path,
@@ -1530,9 +1496,9 @@ def save_checkpoint(
     )
 
 
-# ============================================================
-# CLI / main
-# ============================================================
+
+
+
 
 def parse_args():
     p = argparse.ArgumentParser()
@@ -1777,9 +1743,9 @@ def main():
     history = []
     start = time.time()
 
-    # ========================================================
-    # IMF
-    # ========================================================
+    
+    
+    
 
     for imf in range(
         1,
@@ -1887,9 +1853,9 @@ def main():
         - start
     )
 
-    # ========================================================
-    # Final evaluation
-    # ========================================================
+    
+    
+    
 
     model.net_f.eval()
     model.net_b.eval()

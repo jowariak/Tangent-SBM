@@ -1,21 +1,5 @@
 #!/usr/bin/env python3
-"""
-double_well_tangent_sbm.py
 
-Forward-only Tangent-SBM for the stochastic double-well benchmark.
-
-Key point: the simulator target is an EXPECTED response,
-    J*(x0,u) = E[dX_T/du | x0,u],
-so training uses TWO INDEPENDENT unpinned stochastic rollouts and the
-cross-rollout estimator
-
-    Phi_hat = mean[(J1 - J*) * (J2 - J*)],
-
-which is unbiased for ||E[J_theta] - J*||^2.
-
-The script forks from the ordinary conditional DSBM IMF-3 checkpoint and
-continues IMF 4..7. Backward updates remain ordinary bridge matching.
-"""
 
 import argparse
 import csv
@@ -152,10 +136,7 @@ class TangentDoubleWellDSBM(base.ConditionalDSBM):
         }
 
     def tangent_rollout_train(self, x0, u, noise_bank):
-        """
-        Unpinned learned-SDE rollout plus directional tangent.
-        create_graph=True lets the tangent loss update net_f.
-        """
+        
         if self.intervention_dim != 1:
             raise NotImplementedError("This benchmark uses scalar u.")
 
@@ -255,7 +236,7 @@ class TangentDoubleWellDSBM(base.ConditionalDSBM):
         u = u[perm]
         J_star = J_star[perm]
 
-        # Two independent stochastic rollouts.
+        
         noise_1 = self._sens_noise_bank(
             x0.shape[0],
             x0.dtype,

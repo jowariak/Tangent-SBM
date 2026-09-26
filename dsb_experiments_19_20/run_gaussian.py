@@ -51,14 +51,14 @@ def export(engine,cfg,device):
 def setup(args):
     engine=importlib.import_module(args.method+'_engine')
     cfg=base.Config(seed=args.seed,total_imf=7)
-    cfg.base_channels=cfg.hidden  # adapter alias, Gaussian MLP is width128/depth3
+    cfg.base_channels=cfg.hidden  
     dev=torch.device(args.device)
     if dev.type=='cuda' and not torch.cuda.is_available():raise RuntimeError('CUDA unavailable')
     return engine,cfg,dev
 
 def cost_record(args):
     raw=base.safe_torch_load(args.data_dir/'train.pt')
-    # A common, zero-centred state scale from observed training endpoints only.
+    
     scale=float(.5*(raw['x0'].double().square().sum(-1).mean()+raw['xT'].double().square().sum(-1).mean()))
     if not math.isfinite(scale) or scale<=0:raise ValueError('Invalid endpoint scale')
     return dict(kind=args.cost,dimensionless_strength=args.cost_strength,
@@ -122,7 +122,7 @@ def smoke(args):
 def train(args):
     module,cfg,dev=setup(args)
     cost=cost_record(args);args.beta=cost['beta']
-    # Only endpoint observations are exposed to the training engine.
+    
     raw=base.safe_torch_load(args.data_dir/'train.pt')
     data=dict(x0=raw['x0'].float(),x1=raw['xT'].float(),a=raw['u'].float());del raw
     if data['x0'].shape[1:]!=(2,) or data['a'].shape[1:]!=(1,):raise ValueError('Expected 2D state and scalar intervention')
@@ -212,7 +212,7 @@ def main():
         p.add_argument('--'+name,type=int,default=value)
     args=p.parse_args()
     if not math.isfinite(args.cost_strength) or args.cost_strength<=0:p.error('cost-strength must be positive and finite')
-    args.beta=args.cost_strength if args.cost=='quadratic' else 0.  # synthetic smoke scale=1
+    args.beta=args.cost_strength if args.cost=='quadratic' else 0.  
     if args.run_root is None:
         tag=f'quadratic_{args.cost_strength:g}'.replace('.','p') if args.cost=='quadratic' else 'zero'
         args.run_root=Path('runs')/f'gaussian_{args.method}_cost_v2'/tag

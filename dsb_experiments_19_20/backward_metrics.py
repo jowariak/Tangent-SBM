@@ -27,8 +27,8 @@ def gaussian_reverse_gain(metadata, device, dtype):
         + sigma_eps
     )
 
-    # K = Sigma0 A^T Sigma_y^{-1}
-    # Use solve rather than explicit inverse.
+    
+    
     K = torch.linalg.solve(
         sigma_y.T,
         (sigma0 @ A.T).T,
@@ -37,19 +37,14 @@ def gaussian_reverse_gain(metadata, device, dtype):
     return K
 
 def exact_forward_jacobian(u, metadata):
-    """
-    Shape: [B, state_dim, 1]
-    """
+    
     return base.oracle_jacobian(
         u,
         metadata,
     )
 
 def exact_backward_mean_jacobian(u, metadata):
-    """
-    J_b*(u) = -K J_f*(u)
-    Shape: [B, state_dim, 1]
-    """
+    
     Jf = exact_forward_jacobian(
         u,
         metadata,
@@ -98,7 +93,7 @@ def evaluate_backward_response(
 
     Js = []
 
-    # Evaluation may use global RNG; this happens only after training.
+    
     with torch.enable_grad():
         for _ in range(
             cfg.eval_sens_mc

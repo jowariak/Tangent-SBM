@@ -1,60 +1,5 @@
 #!/usr/bin/env python3
-"""
-pdebench_reaction_diffusion_official.py
 
-Build the Tangent-SBM reaction-diffusion benchmark by calling the OFFICIAL
-PDEBench 2D diffusion-reaction simulator directly.
-
-This is not a reimplementation of the PDE. The script imports:
-    pdebench.data_gen.src.sim_diff_react.Simulator
-
-and uses the public PDEBench diffusion-reaction configuration:
-    grid      = 128 x 128
-    domain    = [-1,1] x [-1,1]
-    T         = 5
-    tdim      = 101
-    Du0       = 1e-3
-    Dv0       = 5e-3
-    k0        = 5e-3
-
-We extend the public fixed-parameter benchmark with controlled parameter
-interventions while retaining the exact official simulator.
-
-Intervention coordinates:
-    a = [a_Du, a_Dv, a_k]
-    Du = Du0 * 2**a_Du
-    Dv = Dv0 * 2**a_Dv
-    k  = k0  * 2**a_k
-
-Directional response target:
-    J*(x0,a) r
-       ~= [F(x0,a+eps r)-F(x0,a-eps r)] / (2 eps)
-
-where all simulations use the SAME PDEBench seed, hence the exact same initial
-condition. The solver is deterministic conditional on seed and parameters, so
-this is a pathwise response target.
-
-The script caches every official PDE solve independently. If a long run is
-interrupted, rerunning resumes from the cache.
-
-Outputs:
-    train.pt
-    test_seen.pt
-    test_id.pt
-    test_ood_near.pt
-    test_ood_far.pt
-
-    anchor_response.pt
-    response_collocation.pt
-
-    response_eval_seen.pt
-    response_eval_id.pt
-    response_eval_ood_near.pt
-    response_eval_ood_far.pt
-
-    metadata.json
-    sim_cache/*.npz
-"""
 
 from __future__ import annotations
 
@@ -174,9 +119,7 @@ def run_official_one(
     a_tuple: tuple[float, float, float],
     cache_dir: str,
 ) -> dict:
-    """
-    Worker function. Runs exactly one official PDEBench trajectory.
-    """
+    
     a = np.asarray(
         a_tuple,
         dtype=np.float64,
@@ -329,9 +272,7 @@ def simulate_many(
     cache_dir: Path,
     workers: int,
 ) -> None:
-    """
-    Ensure all requested trajectories are present in cache.
-    """
+    
     unique = {}
 
     for seed, a in specs:
@@ -1311,7 +1252,7 @@ def main():
         args.seed
     )
 
-    # Fail early if official PDEBench is not importable.
+    
     import_official_simulator(
         args.pdebench_root
     )
@@ -1403,7 +1344,7 @@ def main():
         args.seed
     )
 
-    # Disjoint PDEBench seeds across all endpoint and response-only subsets.
+    
     cursor = 0
 
     train_specs = (
@@ -1519,7 +1460,7 @@ def main():
             far_specs,
     }
 
-    # Endpoint trajectories.
+    
     all_specs = []
 
     for specs in endpoint_specs.values():
@@ -1527,7 +1468,7 @@ def main():
             specs
         )
 
-    # Anchor response uses a balanced subset of actual train endpoint operating points.
+    
     anchor_specs = (
         train_specs[
             :min(
@@ -1682,7 +1623,7 @@ def main():
     verification = None
 
     if args.public_h5:
-        # Ensure a=0 trajectories for the requested seeds are in cache.
+        
         verify_seeds = [
             0,
             1,

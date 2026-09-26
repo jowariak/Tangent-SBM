@@ -1,8 +1,4 @@
-"""Gaussian conditional GSBM using unmodified authors' computational modules.
 
-The single-GPU driver replaces Lightning orchestration, not GSBM's path solver,
-sampling, drift targets, matching loss, or EMA. No response labels in training.
-"""
 import argparse
 from dataclasses import asdict
 import hashlib
@@ -57,7 +53,7 @@ class ConditionalField(torch.nn.Module):
 
 
 class SpatialCost:
-    """Quadratic state cost; beta is normalized using training endpoints only."""
+    
     def __init__(self,beta,shape):
         if not math.isfinite(beta) or beta < 0: raise ValueError('Invalid cost coefficient')
         self.beta=beta
@@ -72,7 +68,7 @@ def fit_config(args):
 
 
 def random_conditional_pairs(x0,x1,a):
-    """Independent empirical coupling within each exact intervention anchor."""
+    
     out=x1.clone()
     for anchor in torch.unique(a,dim=0):
         idx=torch.where((a==anchor).all(1))[0]
@@ -109,8 +105,8 @@ class GSBM:
             path=gp.EndPointGaussianPath(t,xt,st,raw_gamma,self.sigma,self.basedrift)
             loss=gp.build_loss_fn(path,self.sigma,cost,ccfg)
             print(f'pass {pass_id}: official CondSOC pairs {start+1}-{stop}/{len(a)}',flush=True)
-            # Match upstream validation_step: optimize the coupling's direction,
-            # then use the fitted path to match the next direction.
+            
+            
             with torch.enable_grad():
                 fit=gp.fit(ccfg,path,previous or 'fwd',loss,verbose=False)
             finite(path.mean.xt,'fitted mean');finite(path.gamma.xt,'fitted variance')
@@ -129,7 +125,7 @@ class GSBM:
             path=gp.EndPointGaussianPath(population['mean_t'].to(self.device),
                 population['mean_xt'][idx].to(self.device),population['gamma_s'].to(self.device),
                 population['gamma_xs'][idx].to(self.device),self.sigma,self.basedrift)
-            # Same sampling and diagonal pairing as upstream sample_gpath (BM).
+            
             t=torch.rand(len(idx),device=self.device)*(1-2e-4)+1e-4
             with torch.no_grad():
                 xt=path.sample_xt(t,N=1)

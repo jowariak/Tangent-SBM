@@ -12,7 +12,7 @@ import spdebench_sns_response_dataset as gen
 import run_sns_local_budget as helper
 
 SEEDS=(32,42,52)
-ACTIONS=(0.,-.125,.125,-.25,.25)  # zero first gives a conservative exact-tie rule
+ACTIONS=(0.,-.125,.125,-.25,.25)  
 METHODS=('conditional','tangent','tsbm')
 GEN_SEED=2026092116
 def emit(path,obj):helper.save_json(path,obj)
@@ -33,9 +33,9 @@ def checkpoint_path(args,method,seed):
 def audit_tangent(ck):
     expected=dict(fork_imf=3,lambda_sens=1000,sens_batch_size=8,sens_pairs=1,sens_every=10)
     actual={k:ck.get(k) for k in expected};origin='explicit checkpoint sens_pairs'
-    # The original single-pair trainer predates the sens_pairs field. Its saved
-    # objective explicitly states two independent rollouts, i.e. one cross pair.
-    # Do not apply this inference to multipair objectives or explicit mismatches.
+    
+    
+    
     if 'sens_pairs' not in ck and ck.get('response_objective')=='conditional_mean_two_independent_rollout_cross':
         actual['sens_pairs']=1;origin='legacy two-independent-rollout objective (one cross pair)'
     for key,value in expected.items():
@@ -66,7 +66,7 @@ def verify_inputs(args):
         for seed in SEEDS:
             m,_,_=model(args,method,seed,torch.device('cpu'));del m
 def physical_changes(sim,x,a0,deltas,mc,batch,seed):
-    """Each MC draw shares its physical noise between nominal and all actions."""
+    
     sums={d:torch.zeros_like(x.cpu()) for d in deltas}
     for start in range(0,mc,batch):
         n=min(batch,mc-start);gen.set_seed(seed+start)
@@ -77,7 +77,7 @@ def physical_changes(sim,x,a0,deltas,mc,batch,seed):
             gen.restore_rng_state(state,sim.device)
             changed=sim.endpoint(xx,aa+d)-nominal;helper.finite(changed)
             sums[d]+=changed.sum(0,keepdim=True).cpu()/mc
-    return torch.stack([sums[d] for d in deltas])  # action, channel=1, H, W
+    return torch.stack([sums[d] for d in deltas])  
 def prepare(args):
     verify_inputs(args);pr=spec(args);sim,source=helper.simulator(args);pr['simulator']=source
     args.run_root.mkdir(parents=True,exist_ok=True);protocol=args.run_root/'protocol.json'
@@ -112,7 +112,7 @@ def cases(args):
         out.append(base.safe_load(args.run_root/n))
     return out,manifest
 def forecast(m,x0,a0,std,mc,seed):
-    """Model-only predictions. This function has no target or simulator-outcome input."""
+    
     derivative=torch.zeros_like(x0.cpu());finite=torch.zeros(len(ACTIONS),*x0.shape[1:])
     for k in range(mc):
         base.set_seed(seed+k);nb=m._noise_bank(x0)

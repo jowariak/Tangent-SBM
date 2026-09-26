@@ -1,4 +1,4 @@
-"""CPU checks of batching, native tangent differentiation, and metric accumulation."""
+
 import torch
 import evaluate as e
 
@@ -20,8 +20,8 @@ for module, dim in [(e.gaussian, 2), (e.double_well, 1)]:
     torch.testing.assert_close(batched, separate)
     expected = 0.3/0.2*((1+0.2/4)**4-1)
     torch.testing.assert_close(batched, torch.full_like(batched,expected))
-    # The exact discrete endpoint for zero noise, and paired finite change
-    # for arbitrary shared noise, are known for this linear drift.
+    
+    
     endpoint = e.sample_quantity(model,x,u,torch.zeros_like(noise[:,0]),'endpoint',0.25)
     torch.testing.assert_close(endpoint,torch.full_like(endpoint,expected))
     change = e.sample_quantity(model,x,u,noise[:,0],'finite_change',0.25)

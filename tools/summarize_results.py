@@ -1,4 +1,4 @@
-"""Print completed MC4096 comparisons without PyTorch or model checkpoints."""
+
 import json
 from pathlib import Path
 

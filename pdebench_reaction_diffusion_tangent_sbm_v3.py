@@ -9,7 +9,7 @@ import pdebench_reaction_diffusion_conditional_dsbm as base
 
 
 def safe_torch_load(path, map_location="cpu"):
-    """Load checkpoints safely across PyTorch versions."""
+    
     try:
         return torch.load(
             path,

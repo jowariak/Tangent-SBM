@@ -15,7 +15,7 @@ import sys
 import time
 from types import SimpleNamespace
 import torch
-# Full float32 policy that passed the #10 derivative check; used in every mode.
+
 torch.backends.cuda.matmul.allow_tf32 = False
 torch.backends.cudnn.allow_tf32 = False
 PRECISION = {'cuda_matmul_allow_tf32': False, 'cudnn_allow_tf32': False}
@@ -75,11 +75,7 @@ class ConditionalField(torch.nn.Module):
 
 
 class SpatialCost:
-    """Raw sum, matching official build_loss_fn's summed control energy.
-
-    Normalized channels, unit pixel spacing, periodic adjacent differences.
-    This is a declared smoothness prior, not a PDE residual.
-    """
+    
     def __init__(self,beta,shape):self.beta=beta;self.shape=tuple(shape)
     def __call__(self,x,t,gpath):
         v=x.reshape(*x.shape[:-1],*self.shape)
@@ -94,7 +90,7 @@ def fit_config(args):
 
 
 def random_conditional_pairs(x0,x1,a):
-    """Independent empirical coupling within each exact intervention anchor."""
+    
     out=x1.clone()
     for anchor in torch.unique(a,dim=0):
         idx=torch.where((a==anchor).all(1))[0]
@@ -103,7 +99,7 @@ def random_conditional_pairs(x0,x1,a):
 
 
 class TwistedCost:
-    """Use sigma^2 V_GSBM to match the physical cost/control ratio of SNS #12."""
+    
     min_t_cost=0.
     max_t_cost=1.
     def __init__(self,beta,shape,sigma):self.spatial=SpatialCost(beta*sigma**2,shape)
@@ -122,15 +118,15 @@ class TSBM:
             device=self.device,grid_ys=torch.linspace(0,1,args.gamma_grid,device=self.device))
 
     def fit_population(self,data,previous,args,pass_id):
-        # The authors' TSBM reciprocal objective uses the direction being trained,
-        # not the opposite direction used to generate the empirical coupling.
+        
+        
         fb='f' if previous in [None,'bwd'] else 'b'
         ccfg=SimpleNamespace(N=args.path_mc,T=args.path_times,nitr=args.fit_steps,
             nitr_first_it=args.fit_steps,optim='adam',lr_mean=.03,lr_gamma=.03)
         cost=TwistedCost(args.beta,self.shape,self.sigma)
         sampler=Twisted_BM_GeneralCost(cost,'tsbm',1.,self.sigma,(math.prod(self.shape),),'velocity',self.device)
-        # Full [0,1] Euler grid is declared for compatibility with the fixed evaluator.
-        # Matching and variational fitting still exclude singular boundary times.
+        
+        
         grids,_=get_sde_timesteps(1.,self.cfg.num_steps,0.,self.device)
         ids=torch.linspace(0,self.cfg.num_steps,8,device=self.device).long()
         t=grids['f'][ids];st=torch.linspace(0,1,8,device=self.device)
@@ -177,7 +173,7 @@ class TSBM:
             path=self.path(population['mean_t'].to(self.device),population['mean_xt'][idx].to(self.device),
                 population['gamma_s'].to(self.device),population['gamma_xs'][idx].to(self.device),args)
             path.eval();path.gamma.build_grid()
-            # Same low-discrepancy time sampling as the authors' continuous-cost trainer.
+            
             offset=torch.arange(B,device=self.device).view(B,1)/B
             t=2*eps+(1-4*eps)*torch.remainder(torch.rand(1,1,device=self.device)+offset,1)
             r=torch.remainder(torch.rand(1,S,1,device=self.device)+offset[:,None],1)
@@ -201,7 +197,7 @@ class TSBM:
 
 
 def twisted_checks(dev):
-    """Check zero-potential reduction and the nonzero future-gradient correction."""
+    
     shape=(1,4,4);B=2;D=math.prod(shape);sigma=1.4
     t=torch.tensor([[.25],[.65]],device=dev);s=torch.tensor([[[.6]],[[.8]]],device=dev)
     z0=torch.randn(B,D,device=dev);z1=torch.randn_like(z0);zt=torch.randn_like(z0);zs=torch.randn(B,1,D,device=dev)
@@ -217,7 +213,7 @@ def twisted_checks(dev):
             sampler=Twisted_BM_GeneralCost(cost,'tsbm',1.,sigma,(D,),'velocity',dev)
             actual=sampler.get_train_target_from_cond_sampler(z0,z1,zt,t,fb,path,z_s=zs,s=ss,s_times=ss,mask_s=torch.ones_like(ss,dtype=torch.bool))
             x=zs[:,0].reshape(B,*shape)
-            # Analytic gradient of half summed nearest-neighbour squared differences.
+            
             grad=4*x-torch.roll(x,1,-1)-torch.roll(x,-1,-1)-torch.roll(x,1,-2)-torch.roll(x,-1,-2)
             weight=1-ss[:,0] if fb=='f' else ss[:,0]
             truth=expected-weight*beta*sigma**2*grad.flatten(1)
@@ -244,7 +240,7 @@ def train(args):
     for k,v in data.items():finite(v,k)
     cfg=base.Config(seed=args.seed,reference_sigma=1.4,total_imf=args.cycles,fork_imf=0,inner_steps=args.match_steps)
     base.set_seed(args.seed);model=TSBM(cfg,(1,64,64),dev)
-    # Persistent AdamW states for both networks, as in the authors' joint optimizer.
+    
     optimizer=torch.optim.AdamW([p for net in model.nets.values() for p in net.parameters() if p.requires_grad],
                                lr=cfg.lr,weight_decay=1e-5,eps=1e-8)
     directory.mkdir(parents=True,exist_ok=True);history=[];previous=None
@@ -258,8 +254,8 @@ def train(args):
         history.append(dict(pass_number=k+1,direction=direction,reciprocal_direction=direction,
                             reciprocal=reciprocal,matching=matching))
         previous=direction;del population
-        # Save portable EMA inference weights after each completed pass. Latest
-        # file is a progress artifact; only final.pt is accepted by evaluation.
+        
+        
         weights={}
         for d,net in model.nets.items():
             net.eval();weights[d]={name:p.detach().cpu().clone() for name,p in net.model.net.state_dict().items()}
@@ -283,7 +279,7 @@ def train(args):
 
 
 class EvalModel(base.ConditionalFieldDSBM):
-    """Use existing SNS CRN/JVP metric semantics with exported EMA fields."""
+    
     def __init__(self,ck,dev):
         cfg=base.Config(**ck['config']);super().__init__(cfg,dev)
         self.net_f.load_state_dict(ck['weights']['fwd']);self.net_b.load_state_dict(ck['weights']['bwd'])
@@ -358,7 +354,7 @@ def smoke(args):
         model.match(pop,d,opt,tiny,k+1)
         if not any(not torch.equal(x,y) for x,y in zip(before,model.nets[d].model.parameters())):raise RuntimeError('No network update')
         previous=d
-    # Export adapter + JVP against finite differences, with a fixed Brownian bank.
+    
     weights={}
     for d,net in model.nets.items():
         net.eval();weights[d]=net.model.net.state_dict()
@@ -370,8 +366,8 @@ def smoke(args):
     fd=(adapter.sample_sde(x,a+eps*d,noise_bank=nb)-adapter.sample_sde(x,a-eps*d,noise_bank=nb))/(2*eps)
     finite(j,'evaluation JVP');finite(fd,'evaluation FD')
     torch.testing.assert_close(j,fd,rtol=.05,atol=.003)
-    # Verify official SDE sampling and evaluation adapter agree under the same
-    # sequence of noise draws (layout is flattened only in the official sampler).
+    
+    
     model.nets['fwd'].eval();base.set_seed(998)
     official=sdeint(x.flatten(1),lambda xx,t:model.nets['fwd'](xx,t,a),lambda x,t:cfg.reference_sigma,
                     'fwd',nfe=cfg.num_steps,log_steps=2)['xs'][:,-1].reshape_as(x)

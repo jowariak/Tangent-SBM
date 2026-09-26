@@ -1,4 +1,4 @@
-"""Fetch unmodified official GSBM source at a pinned Git revision."""
+
 import hashlib
 import json
 from pathlib import Path
@@ -29,7 +29,7 @@ def main():
         print('Downloading',name,flush=True)
         with urllib.request.urlopen(url,timeout=60) as r:data=r.read()
         path.write_bytes(data);hashes[name]=sha(path)
-    # Upstream is a namespace package; no synthetic modules or source rewriting.
+    
     manifest.write_text(json.dumps(dict(revision=REVISION,files=hashes),indent=2))
     print('Official source downloaded; original license retained.',flush=True)
 

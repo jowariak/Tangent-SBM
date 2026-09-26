@@ -1,28 +1,5 @@
 #!/usr/bin/env python3
-"""
-Parameter-swept 2D PDEBench diffusion-reaction benchmark for Tangent-SBM.
 
-PDEBench dynamics:
-    u_t = u - u^3 - k - v + Du * Laplacian(u)
-    v_t = u - v           + Dv * Laplacian(v)
-
-Default parameters from PDEBench:
-    Du=1e-3, Dv=5e-3, k=5e-3, T=5, domain [-1,1]^2.
-
-For workshop tractability we run the same equations on a reduced 32x32 grid
-(default) with no-flux/Neumann boundaries. The state is therefore
-2 x 32 x 32 = 2048 dimensional.
-
-Intervention coordinates a=[a_Du,a_Dv,a_k] are log2 multipliers:
-    physical_parameter = default * 2**a.
-
-Endpoint train settings use a_j in {-1,0,1}. Test ID uses continuous
-[-1,1]^3. Near/far OOD are cube shells outside that range.
-
-Response targets are directional field sensitivities. For random unit r in R^3,
-    J*(x0,a) r ~= [F(x0,a+eps*r)-F(x0,a-eps*r)]/(2 eps).
-This directly matches the directional JVP formulation used by Tangent-SBM.
-"""
 
 import argparse
 import json
@@ -75,7 +52,7 @@ def solve(x0, a, total_time=5.0, dt=0.02, domain_length=2.0):
     h = total_time / nsteps
     dx = domain_length / x0.shape[-1]
     x = x0.clone()
-    # Heun / RK2
+    
     for _ in range(nsteps):
         k1 = rhs(x, a, dx)
         k2 = rhs(x + h * k1, a, dx)

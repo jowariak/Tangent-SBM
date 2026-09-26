@@ -51,7 +51,7 @@ def write_json(path, value):
 
 
 def noise_for_draw(dataset, split, seed, draw, shape):
-    # Independent draws; identical base noise across methods and MC prefixes.
+    
     key = f'lowdim-mc-v1/{dataset}/{split}/{seed}/{draw}'
     s = int.from_bytes(hashlib.sha256(key.encode()).digest()[:8], 'little') % (2**63 - 1)
     g = torch.Generator(device='cpu').manual_seed(s)
@@ -127,7 +127,7 @@ def evaluate(args, module, cfg, model, raw, metadata, provenance, path):
     for limit in args.mc:
         while count < limit:
             k = min(args.draw_batch, limit - count)
-            # Layout [step, draw, condition, state], matching repeated inputs.
+            
             noises = torch.stack([
                 noise_for_draw(args.dataset, provenance['split']+'/'+kind, provenance['seed'], d,
                                (cfg.num_steps, n, x.shape[1]))
@@ -246,7 +246,7 @@ def main():
                 aggregate.append(row)
                 print(f"{method:12} {split:14} MC={mc:4}: endpoint={row['mean_rmse']['mean']:.6f} "
                       f"E_J={row['E_J']['mean']:.6f} finite={row['finite_response_rmse']['mean']:.6f}")
-    # Selection-specific filename avoids overwriting aggregates from another invocation.
+    
     tag = hashlib.sha256(json.dumps([methods,args.seeds,args.splits,args.mc]).encode()).hexdigest()[:10]
     output = args.out/args.dataset/f'summary_{tag}.json'
     write_json(output, dict(scope='Endpoint mean RMSE, pooled sensitivity E_J, finite-change RMSE',

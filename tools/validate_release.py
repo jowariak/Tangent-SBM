@@ -1,4 +1,4 @@
-"""Dependency-free source and numeric-record checks; not a training test."""
+
 import ast
 import hashlib
 import json

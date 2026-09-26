@@ -37,5 +37,3 @@ python double_well_conditional_dsbm.py --data-dir runs/double_well_data --run-ro
 python double_well_tangent_sbm_v2.py --data-dir runs/double_well_data --baseline-run-root runs/double_well_conditional --run-root runs/double_well_tangent_lam0p25 --anchor-response runs/double_well_data/anchor_response.pt --response-collocation runs/double_well_data/response_collocation.pt --seed 32 --fork-imf 3 --total-imf 7 --lambda-sens 0.25 --sens-every 1 --sens-batch-size 256 --anchor-fraction 0.2
 ```
 
-Iteration counts above refer to outer bridge iterations. Each iteration contains
-many optimization updates; they are not counts of individual gradient steps.

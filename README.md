@@ -27,8 +27,6 @@ The results here were produced with PyTorch 2.8.0+cu128.
 python -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements.txt
-python tools/validate_release.py
-python tools/summarize_results.py
 python lowdim_mc_checks/self_test.py
 ```
 

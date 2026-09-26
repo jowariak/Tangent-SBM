@@ -58,6 +58,3 @@ python lowdim_mc_checks/evaluate.py --dataset double_well --mc 8 16 32 64 128 25
 - [Experiment and dataset entry points](docs/EXPERIMENTS.md)
 - [Third-party code](THIRD_PARTY.md)
 
-`SOURCE_MANIFEST.json` records hashes of the imported source files. Bundled
-third-party components retain their original licenses. A project-wide license
-for the authors' original code has not yet been selected.

@@ -1,7 +1,4 @@
-"""Run #11/#12 inside the user's normal Compose environment.
 
-No image building or GPU selection. Install ipdb in this same container first.
-"""
 import argparse
 from pathlib import Path
 import subprocess

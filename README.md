@@ -21,7 +21,7 @@ control.
 ## Setup
 
 Use Python 3.11 and a PyTorch installation appropriate for your hardware.
-The supplied low-dimensional MC results were produced with PyTorch 2.8.0+cu128.
+The results here were produced with PyTorch 2.8.0+cu128.
 
 ```bash
 python -m venv .venv

@@ -1,68 +1,5 @@
 #!/usr/bin/env python3
-"""
-gaussian_tangent_sbm_nonlinear.py
 
-Tangent-SBM fork for the nonlinear conditional-Gaussian benchmark.
-
-This script MUST be run after:
-    1) gaussian_nonlinear_data.py
-    2) gaussian_conditional_dsbm_nonlinear.py
-
-It loads the ordinary conditional DSBM checkpoint after IMF 3 and then
-continues IMF 4-5 with the same bridge-matching objective PLUS a tangent
-response loss on forward updates.
-
-Ground-truth benchmark
-----------------------
-    xT = A x0 + B1 u + B2 u^2 + B3 sin(pi u) + eps
-
-with additive eps independent of u, so the exact pathwise response is
-
-    J*(u) = d xT / du
-          = B1 + 2 B2 u + pi B3 cos(pi u).
-
-Because the target is pathwise in this controlled benchmark, a single
-stochastic unpinned rollout is a valid response-training sample.  We do
-NOT need the two-independent-rollout expected-response estimator here.
-
-Fair-fork design
-----------------
-- Loads the exact IMF-3 conditional checkpoint.
-- Restores the saved RNG state.
-- Replays the same IMF-3 convergence diagnostic that the baseline ran
-  immediately after saving its checkpoint, so the global bridge-training
-  RNG stream begins IMF 4 at the same point as the baseline.
-- Tangent-loss minibatches/noise use a SEPARATE generator so adding the
-  sensitivity branch does not unnecessarily perturb the bridge-matching
-  random-number stream.
-- Backward passes remain ordinary conditional DSBM.
-- Only forward passes receive the sensitivity term.
-
-Default:
-    lambda_sens = 0.10
-    sens_every = 5 forward bridge updates
-    sens_batch_size = 256
-    sens_steps = same as bridge rollout steps (30 by default)
-
-Main run:
-    python gaussian_tangent_sbm_nonlinear.py \
-        --data-dir runs/gaussian_nonlinear_data \
-        --baseline-run-root runs/gaussian_conditional_nonlinear \
-        --run-root runs/gaussian_tangent_nonlinear \
-        --seed 32 \
-        --lambda-sens 0.10
-
-Smoke test of the FORK code only (not reportable):
-    python gaussian_tangent_sbm_nonlinear.py \
-        --data-dir runs/gaussian_nonlinear_data \
-        --baseline-run-root runs/gaussian_conditional_nonlinear \
-        --run-root runs/gaussian_tangent_nonlinear_quick \
-        --seed 32 \
-        --lambda-sens 0.10 \
-        --inner-steps 20 \
-        --eval-mc 4 \
-        --eval-sens-mc 2
-"""
 
 import argparse
 import csv
@@ -88,9 +25,9 @@ except ImportError as exc:
     ) from exc
 
 
-# ============================================================
-# Logging
-# ============================================================
+
+
+
 
 def setup_logging(path: Path):
     path.parent.mkdir(
@@ -129,9 +66,9 @@ def log(*args):
     )
 
 
-# ============================================================
-# RNG restoration
-# ============================================================
+
+
+
 
 def restore_rng_state(state):
     random.setstate(
@@ -156,9 +93,9 @@ def restore_rng_state(state):
 
 
 
-# ============================================================
-# Response-only collocation supervision
-# ============================================================
+
+
+
 
 def load_response_collocation(
     path,
@@ -247,9 +184,9 @@ def load_response_collocation(
     }
 
 
-# ============================================================
-# Tangent-SBM model
-# ============================================================
+
+
+
 
 class TangentDSBM(
     base.ConditionalDSBM
@@ -305,8 +242,8 @@ class TangentDSBM(
                 "anchor_fraction must lie in [0,1]."
             )
 
-        # Dedicated CPU generator for tangent-loss sampling/noise.
-        # This intentionally does NOT use the global bridge RNG.
+        
+        
         self.sens_generator = (
             torch.Generator(
                 device="cpu"
@@ -316,9 +253,9 @@ class TangentDSBM(
             )
         )
 
-    # --------------------------------------------------------
-    # Dedicated tangent-loss randomness
-    # --------------------------------------------------------
+    
+    
+    
 
     def _sens_rand_indices(
         self,
@@ -339,11 +276,7 @@ class TangentDSBM(
         state_dim,
         dtype,
     ):
-        """
-        Generate response-rollout Brownian noise from the dedicated
-        sensitivity RNG so the main bridge-training RNG stream remains
-        comparable to the ordinary conditional baseline.
-        """
+        
         bank = []
 
         for _ in range(
@@ -366,9 +299,9 @@ class TangentDSBM(
 
         return bank
 
-    # --------------------------------------------------------
-    # Differentiable stochastic tangent rollout
-    # --------------------------------------------------------
+    
+    
+    
 
     def tangent_training_rollout(
         self,
@@ -376,19 +309,7 @@ class TangentDSBM(
         u,
         noise_bank,
     ):
-        """
-        Unpinned stochastic rollout of the CURRENT learned forward SDE,
-        with the directional tangent propagated through the same path.
-
-        Default benchmark has scalar u, hence a single basis direction
-        v = 1 and R_t has shape [B, state_dim].
-
-        R_0 = 0 because x0 is held fixed while u is perturbed.
-
-        IMPORTANT:
-        create_graph=True is required because the sensitivity loss must
-        backpropagate through the tangent dynamics into drift parameters.
-        """
+        
         if self.intervention_dim != 1:
             raise NotImplementedError(
                 "The current nonlinear Gaussian benchmark uses scalar u."
@@ -402,12 +323,12 @@ class TangentDSBM(
         x = x0
         u_var = u
 
-        # R_0 = d x0 / du = 0.
+        
         R = torch.zeros_like(
             x
         )
 
-        # Direction v = e_1 for scalar intervention.
+        
         v = torch.ones_like(
             u_var
         )
@@ -459,9 +380,9 @@ class TangentDSBM(
                 )
             )
 
-            # Same stochastic realization for state and tangent path.
-            # Diffusion is additive and independent of u, so there is no
-            # stochastic term in the tangent equation itself.
+            
+            
+            
             x = (
                 x
                 + dt * drift
@@ -475,8 +396,8 @@ class TangentDSBM(
                 + dt * tangent_drift
             )
 
-        # Observable is identity Y = X_T.
-        # Shape [B, state_dim, 1].
+        
+        
         return R.unsqueeze(-1)
 
     def _sample_response_batch(
@@ -484,9 +405,7 @@ class TangentDSBM(
         source_data,
         batch_size,
     ):
-        """
-        Sample (x0, u, J*) using the dedicated sensitivity RNG.
-        """
+        
         if batch_size <= 0:
             return None
 
@@ -531,19 +450,7 @@ class TangentDSBM(
         anchor_data,
         collocation_data,
     ):
-        """
-        Build one sensitivity minibatch as a mixture of:
-
-            anchor_fraction:
-                response targets at the original endpoint-anchor samples
-                u in {-1,0,+1}
-
-            1-anchor_fraction:
-                response-only collocation samples over the broader u domain.
-
-        Endpoint bridge matching STILL uses only the original endpoint data.
-        No xT from collocation points exists or is used.
-        """
+        
         total_bsz = min(
             self.sens_batch_size,
             int(
@@ -643,8 +550,8 @@ class TangentDSBM(
             dim=0,
         )
 
-        # Shuffle the combined sensitivity minibatch using the dedicated
-        # sensitivity RNG. This does not touch the bridge RNG stream.
+        
+        
         perm_cpu = torch.randperm(
             x0.shape[0],
             generator=
@@ -700,10 +607,10 @@ class TangentDSBM(
             per_sample_sq.mean()
         )
 
-        # Diagnostics only: compute source-specific loss values before
-        # shuffling by evaluating the corresponding sample counts from the
-        # unshuffled source batches independently from their J targets.
-        # These do not contribute additional gradients.
+        
+        
+        
+        
         diagnostics = {
             "n_anchor":
                 int(
@@ -726,9 +633,9 @@ class TangentDSBM(
             diagnostics,
         )
 
-    # --------------------------------------------------------
-    # One IMF Markov projection pass
-    # --------------------------------------------------------
+    
+    
+    
 
     def train_pass_tangent(
         self,
@@ -737,14 +644,7 @@ class TangentDSBM(
         anchor_sensitivity_data=None,
         collocation_sensitivity_data=None,
     ):
-        """
-        Same ordinary bridge-matching pass as the baseline, except that
-        selected FORWARD updates receive
-
-            L = L_BM + lambda_sens * L_sens.
-
-        Backward updates are unchanged.
-        """
+        
         cfg = self.cfg
 
         (
@@ -783,8 +683,8 @@ class TangentDSBM(
                 n,
             )
 
-            # IMPORTANT: bridge batch sampling still uses the GLOBAL RNG,
-            # matching the baseline's random-number stream after fork.
+            
+            
             idx = torch.randint(
                 0,
                 n,
@@ -990,31 +890,21 @@ class TangentDSBM(
 
 
 
-# ============================================================
-# Gradient-flow sanity check
-# ============================================================
+
+
+
 
 def gradient_flow_sanity_check(
     model,
     train_data,
     max_batch_size=32,
 ):
-    """
-    Verify once, before training, that the tangent response loss produces
-    a finite NONZERO gradient on the forward drift parameters.
-
-    This performs NO optimizer step and therefore does not change model
-    parameters.  It also snapshots/restores the dedicated sensitivity RNG
-    state, so the subsequent Tangent-SBM training sequence is unchanged.
-
-    We additionally verify that the backward drift receives no gradient
-    from the forward-only sensitivity objective.
-    """
+    
     original_batch_size = (
         model.sens_batch_size
     )
 
-    # Preserve the dedicated sensitivity RNG exactly.
+    
     sens_rng_state = (
         model.sens_generator
         .get_state()
@@ -1132,7 +1022,7 @@ def gradient_flow_sanity_check(
                 "produce a nonzero gradient on net_f."
             )
 
-        # The response objective is intentionally forward-only.
+        
         if backward_grad_norm > 0.0:
             raise RuntimeError(
                 "Gradient sanity check failed: "
@@ -1170,7 +1060,7 @@ def gradient_flow_sanity_check(
         }
 
     finally:
-        # No training state should be changed by this diagnostic.
+        
         model.net_f.zero_grad(
             set_to_none=True
         )
@@ -1194,13 +1084,7 @@ def mixed_gradient_flow_sanity_check(
     collocation_data,
     max_batch_size=32,
 ):
-    """
-    Verify that the 50/50-style mixed tangent response loss produces a
-    finite, nonzero gradient on the forward drift and none on net_b.
-
-    No optimizer step is taken, and the dedicated sensitivity RNG state is
-    restored exactly afterward.
-    """
+    
     original_batch_size = (
         model.sens_batch_size
     )
@@ -1369,9 +1253,9 @@ def mixed_gradient_flow_sanity_check(
         )
 
 
-# ============================================================
-# Checkpoint / comparison helpers
-# ============================================================
+
+
+
 
 def save_tangent_checkpoint(
     path,
@@ -1523,15 +1407,12 @@ def maybe_write_comparison(
 
 
 
-# ============================================================
-# Workshop ablation helpers
-# ============================================================
+
+
+
 
 def _clone_response_view(data):
-    """
-    Create a response-only view so target corruption can NEVER modify the
-    endpoint-training tensors used by bridge matching.
-    """
+    
     return {
         "x0": data["x0"].clone(),
         "u": data["u"].clone(),
@@ -1544,13 +1425,7 @@ def _deterministic_response_subset(
     fraction,
     seed,
 ):
-    """
-    Select a fixed subset of response-collocation operating points.
-
-    The selected points still span the same supplied u-domain in expectation;
-    this ablates the AMOUNT of available response information rather than
-    changing endpoint supervision.
-    """
+    
     fraction = float(fraction)
 
     if not (
@@ -1608,20 +1483,7 @@ def _apply_target_mode(
     mode,
     seed,
 ):
-    """
-    Corrupt ONLY response targets. x0 and u are unchanged.
-
-    correct:
-        use the true mechanistic response target.
-
-    shuffle:
-        randomly permute J* across operating points, destroying the
-        u -> response relationship while preserving the marginal target
-        distribution. This is the preferred wrong-target workshop control.
-
-    signflip:
-        use -J*. Stronger deliberately incorrect response control.
-    """
+    
     out = _clone_response_view(
         data
     )
@@ -1672,9 +1534,9 @@ def _apply_target_mode(
     )
 
 
-# ============================================================
-# CLI
-# ============================================================
+
+
+
 
 def parse_args():
     p = argparse.ArgumentParser()
@@ -1816,7 +1678,7 @@ def parse_args():
         ),
     )
 
-    # Optional smoke-test / diagnostic overrides.
+    
     p.add_argument(
         "--inner-steps",
         type=int,
@@ -1868,9 +1730,9 @@ def parse_args():
     return p.parse_args()
 
 
-# ============================================================
-# Main
-# ============================================================
+
+
+
 
 def main():
     args = parse_args()
@@ -1924,7 +1786,7 @@ def main():
             "Checkpoint IMF does not match requested fork."
         )
 
-    # Reconstruct the baseline config EXACTLY from its checkpoint.
+    
     cfg = base.Config(
         **checkpoint["config"]
     )
@@ -1945,7 +1807,7 @@ def main():
             "total_imf must be greater than fork_imf."
         )
 
-    # Optional smoke-test overrides.
+    
     if args.inner_steps is not None:
         cfg.inner_steps = int(
             args.inner_steps
@@ -2125,9 +1987,9 @@ def main():
         False,
     )
 
-    # --------------------------------------------------------
-    # Workshop response-coverage / target-correctness ablations
-    # --------------------------------------------------------
+    
+    
+    
     response_data = (
         _deterministic_response_subset(
             data=response_data,
@@ -2210,9 +2072,9 @@ def main():
         args.fork_imf,
     )
 
-    # --------------------------------------------------------
-    # Restore baseline RNG state at fork.
-    # --------------------------------------------------------
+    
+    
+    
 
     restore_rng_state(
         checkpoint[
@@ -2224,9 +2086,9 @@ def main():
         datasets["train"]
     )
 
-    # Endpoint bridge matching always uses train_data unchanged.
-    # Response supervision uses this separate view so shuffled/sign-flipped
-    # targets cannot leak into endpoint training.
+    
+    
+    
     anchor_response_data = (
         _apply_target_mode(
             data={
@@ -2245,10 +2107,10 @@ def main():
         )
     )
 
-    # The baseline checkpoint was saved BEFORE that script computed
-    # its IMF-3 convergence diagnostic. Replaying the same diagnostic
-    # advances the global RNG to the same location from which baseline
-    # IMF 4 started. This is purely for fair stochastic continuation.
+    
+    
+    
+    
     if not args.no_rng_replay:
         log("")
         log(
@@ -2279,9 +2141,9 @@ def main():
             f"{replay['jacobian_rel_error']:.6f}"
         )
 
-    # --------------------------------------------------------
-    # One-time gradient-flow sanity check
-    # --------------------------------------------------------
+    
+    
+    
     if not args.skip_gradient_sanity_check:
         log("")
         log(
@@ -2308,9 +2170,9 @@ def main():
             f"collocation={grad_check['n_collocation']}"
         )
 
-    # ========================================================
-    # Continue IMF after the fork with Tangent-SBM.
-    # ========================================================
+    
+    
+    
 
     history = []
     start = time.time()
@@ -2391,7 +2253,7 @@ def main():
             checkpoint_path,
         )
 
-        # Same convergence diagnostic style as conditional baseline.
+        
         model.net_f.eval()
         model.net_b.eval()
 
@@ -2529,9 +2391,9 @@ def main():
         - start
     )
 
-    # ========================================================
-    # Final evaluation
-    # ========================================================
+    
+    
+    
 
     model.net_f.eval()
     model.net_b.eval()

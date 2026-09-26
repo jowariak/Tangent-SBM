@@ -1,28 +1,5 @@
 #!/usr/bin/env python3
-"""
-pdebench_reaction_diffusion_dsbm_unconditional.py
 
-Plain DSBM baseline for the official PDEBench 2D diffusion-reaction benchmark.
-
-This uses the same spatial U-Net bridge architecture as the conditional baseline
-but REMOVES access to the physical intervention a=[a_Du,a_Dv,a_k].
-
-Implementation detail:
-- The network architecture is kept matched.
-- All conditioning channels are forced to zero in training and sampling.
-- Therefore the model can use X_t and bridge time t, but cannot use PDE parameters.
-- Its directional response with respect to a is identically zero by construction,
-  so Jv relative error is exactly the zero-response baseline.
-
-Use this script to train/evaluate the no-conditioning DSBM baseline.
-
-Recommended first run:
-    python pdebench_reaction_diffusion_dsbm_unconditional.py \
-      --data-dir runs/pdebench_reaction_diffusion_official \
-      --run-root runs/pdebench_rd_dsbm \
-      --seed 32 \
-      --total-imf 3
-"""
 
 from __future__ import annotations
 
@@ -43,10 +20,7 @@ def zero_condition(a):
 
 
 class UnconditionalFieldDSBM(base.ConditionalFieldDSBM):
-    """
-    Same network capacity as ConditionalFieldDSBM, but the intervention
-    channels are always zero. Thus the bridge has no access to PDE parameters.
-    """
+    
 
     def get_train_tuple(self, z0, z1, a, fb):
         zt, _, t, target = super().get_train_tuple(
@@ -65,8 +39,8 @@ class UnconditionalFieldDSBM(base.ConditionalFieldDSBM):
         fb="f",
         noise_bank=None,
     ):
-        # Match the actual baseline API exactly:
-        # sample_sde(xstart, a, fb="f", noise_bank=None)
+        
+        
         return super().sample_sde(
             xstart,
             zero_condition(a),
@@ -81,7 +55,7 @@ class UnconditionalFieldDSBM(base.ConditionalFieldDSBM):
         direction,
         noise_bank=None,
     ):
-        # Model is independent of a by construction.
+        
         return torch.zeros_like(x0)
 
 
@@ -269,7 +243,7 @@ def main():
             "f",
         )
 
-        # Evaluate train endpoint fidelity after each IMF.
+        
         conv = base.convergence(
             model,
             endpoint["train"],
@@ -328,8 +302,8 @@ def main():
         - start
     )
 
-    # Evaluate only final IMF here. If an earlier IMF is better, rerun with
-    # --total-imf set to that selected checkpoint for the final 3-seed table.
+    
+    
     results = {}
 
     for split in [
@@ -338,8 +312,8 @@ def main():
         "test_ood_near",
         "test_ood_far",
     ]:
-        # base.evaluate_split calls model.tangent_direction_rollout;
-        # ours returns exactly zero sensitivity.
+        
+        
         results[split] = base.evaluate_split(
             split,
             model,

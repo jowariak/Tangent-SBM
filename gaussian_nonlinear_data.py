@@ -1,72 +1,5 @@
 #!/usr/bin/env python3
-"""
-gaussian_nonlinear_data.py
 
-Nonlinear conditional-Gaussian benchmark for Tangent-SBM.
-
-The state/noise model remains Gaussian and analytically controlled:
-
-    x0  ~ N(mu0, Sigma0)
-    eps ~ N(0, Sigma_eps)
-
-    xT = A x0
-         + B1 u
-         + B2 u^2
-         + B3 sin(pi u)
-         + eps
-
-Hence
-
-    X_T | x0, u ~ N(mu(x0,u), Sigma_eps)
-
-with exact response
-
-    J*(u) = d mu / du
-          = B1 + 2 B2 u + pi B3 cos(pi u)
-
-for the default scalar intervention u.
-
-WHY THIS VERSION
-----------------
-Training endpoint observations are provided only at the three intervention
-anchors u in {-1, 0, +1}.  At all three anchors sin(pi u) = 0, so the B3
-term is invisible from endpoint values at the observed conditions.
-
-However, its derivative is NOT invisible:
-    d/du [B3 sin(pi u)] = pi B3 cos(pi u).
-
-Thus two conditional models can fit the observed endpoint distributions while
-having different intervention responses.  Tangent-SBM receives J*(u) at the
-same observed training conditions and can use that response information.
-
-Splits
-------
-train:
-    exact anchors {-1, 0, +1}
-
-test_seen:
-    fresh samples at the same anchors
-
-test_id:
-    continuous u ~ Uniform[-1, 1]
-    (in-range interpolation at mostly unseen intervention values)
-
-test_ood_near:
-    |u| ~ Uniform[1.15, 1.50]
-
-test_ood_far:
-    |u| ~ Uniform[1.75, 2.25]
-
-Outputs
--------
-    runs/gaussian_nonlinear_data/
-        train.pt
-        test_seen.pt
-        test_id.pt
-        test_ood_near.pt
-        test_ood_far.pt
-        metadata.json
-"""
 
 import argparse
 import json
@@ -78,9 +11,9 @@ import numpy as np
 import torch
 
 
-# ============================================================
-# Reproducibility
-# ============================================================
+
+
+
 
 def set_seed(seed: int) -> None:
     random.seed(seed)
@@ -88,9 +21,9 @@ def set_seed(seed: int) -> None:
     torch.manual_seed(seed)
 
 
-# ============================================================
-# Ground-truth system
-# ============================================================
+
+
+
 
 def default_system():
     mu0 = torch.tensor(
@@ -114,7 +47,7 @@ def default_system():
         dtype=torch.float32,
     )
 
-    # Smooth "visible" intervention component.
+    
     B1 = torch.tensor(
         [
             [ 0.70],
@@ -123,7 +56,7 @@ def default_system():
         dtype=torch.float32,
     )
 
-    # Smooth curvature visible at +/-1.
+    
     B2 = torch.tensor(
         [
             [0.25],
@@ -132,10 +65,10 @@ def default_system():
         dtype=torch.float32,
     )
 
-    # Crucial hidden-response component:
-    # sin(pi*u)=0 at u=-1,0,+1, so endpoint values at the training
-    # anchors cannot identify B3.  J*(u), however, contains
-    # pi*B3*cos(pi*u), which is nonzero at all three anchors.
+    
+    
+    
+    
     B3 = torch.tensor(
         [
             [ 0.55],
@@ -163,9 +96,7 @@ def oracle_mean(
     B2: torch.Tensor,
     B3: torch.Tensor,
 ) -> torch.Tensor:
-    """
-    Default benchmark has scalar u with shape [N,1].
-    """
+    
     if u.ndim != 2 or u.shape[1] != 1:
         raise ValueError("This benchmark currently expects scalar u with shape [N,1].")
 
@@ -183,13 +114,11 @@ def oracle_jacobian(
     B2: torch.Tensor,
     B3: torch.Tensor,
 ) -> torch.Tensor:
-    """
-    Returns samplewise J*(u) with shape [N, state_dim, 1].
-    """
+    
     if u.ndim != 2 or u.shape[1] != 1:
         raise ValueError("This benchmark currently expects scalar u with shape [N,1].")
 
-    # [N, state_dim]
+    
     deriv = (
         B1.T
         + 2.0 * u * B2.T
@@ -199,9 +128,9 @@ def oracle_jacobian(
     return deriv.unsqueeze(-1)
 
 
-# ============================================================
-# Sampling
-# ============================================================
+
+
+
 
 def sample_mvn(
     mean: torch.Tensor,
@@ -222,9 +151,7 @@ def sample_anchor_u(
     n: int,
     generator: torch.Generator,
 ) -> torch.Tensor:
-    """
-    Balanced exact anchors {-1,0,+1}.
-    """
+    
     anchors = torch.tensor(
         [-1.0, 0.0, 1.0],
         dtype=torch.float32,
@@ -354,18 +281,18 @@ def make_split(
         "eps": eps.float(),
         "true_conditional_mean": true_mean.float(),
 
-        # IMPORTANT: unlike the original globally-linear benchmark,
-        # J* now varies by sample through u.
-        # Shape: [N, state_dim, intervention_dim].
+        
+        
+        
         "J_star": J_star.float(),
 
         "split": split,
     }
 
 
-# ============================================================
-# Sanity checks
-# ============================================================
+
+
+
 
 def finite_difference_jacobian_check(
     x0: torch.Tensor,
@@ -430,9 +357,9 @@ def empirical_noise_covariance(
     )
 
 
-# ============================================================
-# Main
-# ============================================================
+
+
+
 
 def main():
     p = argparse.ArgumentParser()
@@ -504,7 +431,7 @@ def main():
         sigma_eps,
     ) = default_system()
 
-    # Positive-definiteness checks.
+    
     torch.linalg.cholesky(
         sigma0
     )
@@ -579,9 +506,9 @@ def main():
             f"J*={tuple(obj['J_star'].shape)}"
         )
 
-    # --------------------------------------------------------
-    # Sanity checks
-    # --------------------------------------------------------
+    
+    
+    
 
     check = torch.load(
         out_dir
@@ -609,7 +536,7 @@ def main():
         check["eps"]
     )
 
-    # Exact J* at the three observed training conditions.
+    
     anchor_u = torch.tensor(
         [
             [-1.0],

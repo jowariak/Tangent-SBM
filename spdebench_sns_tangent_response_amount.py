@@ -1,29 +1,5 @@
 #!/usr/bin/env python3
-"""
-spdebench_sns_tangent_response_amount.py
 
-Tangent-SBM continuation for the stochastic 2D Navier--Stokes response benchmark.
-
-Protocol:
-  * load a frozen Conditional-DSBM checkpoint (default IMF 3);
-  * continue both bridge directions through a matched final IMF (default IMF 5);
-  * backward updates remain ordinary bridge matching;
-  * forward updates use ordinary bridge matching plus conditional-MEAN
-    sensitivity supervision;
-  * expected-response supervision uses K independent PAIRS of learned-SDE
-    rollouts sharing (x0, a, direction), averaging the unbiased cross-rollout
-    estimator across pairs:
-
-      (1/K) sum_k <R_(2k-1)-J*, R_(2k)-J*>
-
-    whose expectation is || E[R] - J* ||^2.
-
-The sensitivity rollouts are free/unpinned learned-SDE rollouts.  They are not
-endpoint-pinned reciprocal bridge trajectories.
-
-For hyperparameter tuning, pass --skip-final-test-eval and select lambda only
-with spdebench_sns_select_tangent.py on validation.pt.
-"""
 
 from __future__ import annotations
 
@@ -48,7 +24,7 @@ def subset_collocation(src, fraction):
     n = src["x0"].shape[0]
     if n < 1:
         raise ValueError("Collocation data are empty")
-    # Shared permutation: 25% is nested in 50%, independently of training seed.
+    
     generator = torch.Generator(device="cpu").manual_seed(19092028)
     count = max(1, int(n * fraction))
     indices = (torch.arange(n) if fraction == 1.0
@@ -79,7 +55,7 @@ def sigma_tag(x: float) -> str:
 
 
 def lambda_tag(x: float) -> str:
-    # Stable filesystem-friendly tag, e.g. 0.1 -> 0p1, 1000 -> 1000
+    
     return f"{float(x):g}".replace(".", "p").replace("-", "m")
 
 
@@ -91,15 +67,7 @@ def _first_present(obj, names):
 
 
 def load_response_file(path: Path, state_mean: float, state_std: float):
-    """
-    Load a response-only training file robustly.
-
-    Supports either:
-      raw keys:  x0, a, direction, Jv_star
-      normalized keys: x0_norm, a, direction, Jv_star_norm
-
-    No endpoint labels are used.  If an endpoint-like key is present, fail.
-    """
+    
     obj = base.safe_load(path)
 
     forbidden = {
@@ -189,8 +157,8 @@ class TangentFieldDSBM(base.ConditionalFieldDSBM):
         return torch.randint(0, n, (b,), generator=self.sens_generator, device="cpu")
 
     def _sens_noise_bank(self, batch: int, dtype):
-        # Use a dedicated CPU generator so sensitivity sampling does not consume
-        # the global training RNG used by ordinary bridge matching.
+        
+        
         return [
             torch.randn(
                 batch, 1, 64, 64,
@@ -237,10 +205,7 @@ class TangentFieldDSBM(base.ConditionalFieldDSBM):
         return x0[perm], a[perm], d[perm], target[perm]
 
     def tangent_training_rollout(self, x0, a, direction, noise_bank):
-        """
-        Differentiable Euler-Maruyama rollout of state and directional tangent.
-        Additive intervention-independent diffusion contributes no tangent-noise term.
-        """
+        
         dt = 1.0 / float(self.cfg.num_steps)
         x = x0
         R = torch.zeros_like(x0)
@@ -273,7 +238,7 @@ class TangentFieldDSBM(base.ConditionalFieldDSBM):
         return R
 
     def _single_cross_pair_loss(self, x0, a, d, target):
-        """One unbiased cross-rollout estimate for a fixed response batch."""
+        
         nb1 = self._sens_noise_bank(x0.shape[0], x0.dtype)
         nb2 = self._sens_noise_bank(x0.shape[0], x0.dtype)
 
@@ -285,13 +250,7 @@ class TangentFieldDSBM(base.ConditionalFieldDSBM):
         return torch.mean(e1 * e2)
 
     def conditional_mean_response_loss(self, anchor, colloc):
-        """
-        Diagnostic/evaluation form of the K-pair estimator.
-
-        Training uses sequential backward passes (see train_pass_tangent) so
-        only ONE pair's autograd graph is resident at a time.  This function
-        remains useful for small-batch gradient sanity checks.
-        """
+        
         x0, a, d, target = self._response_batch(anchor, colloc)
         vals = [
             self._single_cross_pair_loss(x0, a, d, target)
@@ -327,12 +286,12 @@ class TangentFieldDSBM(base.ConditionalFieldDSBM):
             opt.zero_grad(set_to_none=True)
 
             if do_sens:
-                # Backprop the ordinary bridge term first; its graph can be
-                # released immediately.
+                
+                
                 bridge.backward()
 
-                # Sample ONE response minibatch and reuse it for all K pairs,
-                # exactly matching the intended K-pair estimator.
+                
+                
                 x0_s, a_s, d_s, target_s = self._response_batch(anchor, colloc)
 
                 pair_vals = []
@@ -341,9 +300,9 @@ class TangentFieldDSBM(base.ConditionalFieldDSBM):
                     pair_loss = self._single_cross_pair_loss(
                         x0_s, a_s, d_s, target_s
                     )
-                    # Each backward frees this pair's rollout/JVP graph before
-                    # the next pair is constructed.  Gradient accumulation is
-                    # mathematically identical to backpropagating the average.
+                    
+                    
+                    
                     (scale * pair_loss).backward()
                     pair_vals.append(float(pair_loss.detach().cpu()))
 
@@ -491,8 +450,8 @@ def main():
     if cfg.total_imf <= cfg.fork_imf:
         raise ValueError("total-imf must be > fork-imf")
 
-    # IMPORTANT: base.load_dataset loads the fixed test files.  For tuning runs
-    # we intentionally avoid it and load endpoint train + metadata directly.
+    
+    
     metadata = json.load(open(args.data_dir / "metadata.json"))
     state_mean, state_std = base.normalization_from_metadata(metadata)
     tr = base.safe_load(args.data_dir / "endpoint_train.pt")
@@ -658,7 +617,7 @@ def main():
         log("Use spdebench_sns_select_tangent.py with validation.pt to select lambda.")
         return
 
-    # Only final, frozen runs reach here.
+    
     _, eval_data, _, _, _ = base.load_dataset(args.data_dir)
     results = {
         split: base.evaluate_split(

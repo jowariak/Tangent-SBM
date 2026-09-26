@@ -1,42 +1,5 @@
 #!/usr/bin/env python3
-"""
-double_well_conditional_gsbm.py
 
-Conditional adaptation of Generalized Schrodinger Bridge Matching (GSBM)
-for the stochastic double-well benchmark used by Tangent-SBM.
-
-Design goals
-------------
-* Preserve the existing conditional bridge interface b_theta(x, u, t).
-* Fork from the same Conditional-DSBM IMF checkpoint as Tangent-SBM.
-* Use a GSBM-style Gaussian reciprocal projection with a state/path cost,
-  followed by Markovian projection onto the conditional drift network.
-* Never use J* sensitivity labels in training.
-* Reuse double_well_conditional_dsbm.py for the exact same Seen/ID/Near/Far
-  evaluator and metrics: endpoint mean RMSE, E_J, and finite-response RMSE.
-
-The state cost is the physical double-well potential
-
-    U(x,u) = x^4/4 - x^2/2 - 0.30*x*tanh(u),
-
-whose negative spatial gradient is the deterministic simulator drift
-
-    -dU/dx = x - x^3 + 0.30*tanh(u).
-
-The reciprocal projection follows the Gaussian-path parameterization used in
-GSBM: a learnable mean spline m_t and scalar standard-deviation spline gamma_t
-are optimized for each endpoint pair by minimizing
-
-    E[ beta * U(X_t,u) + ||u_t||^2 / (2 sigma^2) ].
-
-The resulting Gaussian-path drift is then the regression target for the
-conditional forward/backward drift networks.
-
-This is a conditional adaptation because published GSBM code transports between
-unconditional endpoint marginals and has no persistent exogenous u input. Here u
-is kept fixed as conditioning information throughout each path rather than being
-transported/noised as part of the stochastic state.
-"""
 
 import argparse
 import csv
@@ -57,9 +20,9 @@ import torch.nn.functional as F
 import double_well_conditional_dsbm as base
 
 
-# -----------------------------------------------------------------------------
-# logging / RNG
-# -----------------------------------------------------------------------------
+
+
+
 
 def setup_logging(path):
     path = Path(path)
@@ -87,30 +50,22 @@ def restore_rng_state(state):
         torch.cuda.set_rng_state_all(state["cuda"])
 
 
-# -----------------------------------------------------------------------------
-# Physical state cost
-# -----------------------------------------------------------------------------
+
+
+
 
 def double_well_potential(x, u):
-    """
-    x: (..., 1)
-    u: broadcastable to x[..., 0]
-    returns: x.shape[:-1]
-    """
+    
     xx = x[..., 0]
     return 0.25 * xx.pow(4) - 0.50 * xx.pow(2) - 0.30 * xx * torch.tanh(u)
 
 
-# -----------------------------------------------------------------------------
-# Differentiable piecewise-linear spline utilities
-# -----------------------------------------------------------------------------
+
+
+
 
 def _interp_grid(ctrl, t):
-    """
-    ctrl: (B, K, D)
-    t:    (S,) in [0,1]
-    returns value, dvalue/dt: (B, S, D)
-    """
+    
     B, K, D = ctrl.shape
     s = t.clamp(0.0, 1.0) * (K - 1)
     idx = torch.floor(s).long().clamp(0, K - 2)
@@ -124,11 +79,7 @@ def _interp_grid(ctrl, t):
 
 
 def _interp_pairwise(ctrl, t):
-    """
-    ctrl: (B, K, D)
-    t:    (B,1) or (B,)
-    returns value, dvalue/dt: (B,D)
-    """
+    
     if t.ndim == 2:
         t = t[:, 0]
     B, K, D = ctrl.shape
@@ -148,7 +99,7 @@ def _interp_pairwise(ctrl, t):
 
 
 def _gamma_grid(raw_ctrl, t, sigma, eps=1e-8):
-    raw, draw = _interp_grid(raw_ctrl, t)  # (B,S,1)
+    raw, draw = _interp_grid(raw_ctrl, t)  
     tt = t.view(1, -1, 1).clamp(eps, 1.0 - eps)
 
     sp = F.softplus(raw)
@@ -164,7 +115,7 @@ def _gamma_grid(raw_ctrl, t, sigma, eps=1e-8):
 
 
 def _gamma_pairwise(raw_ctrl, t, sigma, eps=1e-8):
-    raw, draw = _interp_pairwise(raw_ctrl, t)  # (B,1)
+    raw, draw = _interp_pairwise(raw_ctrl, t)  
     if t.ndim == 2:
         tt = t
     else:
@@ -183,16 +134,13 @@ def _gamma_pairwise(raw_ctrl, t, sigma, eps=1e-8):
     return gamma.clamp_min(1e-6), dgamma
 
 
-# -----------------------------------------------------------------------------
-# Gaussian reciprocal path (GSBM-style)
-# -----------------------------------------------------------------------------
+
+
+
 
 class TrainableGaussianPath(nn.Module):
     def __init__(self, mean_init, gamma_knots, sigma):
-        """
-        mean_init:   (B,Km,D), endpoints fixed
-        gamma_knots: integer Kg >= 3; raw interior initialized at 0
-        """
+        
         super().__init__()
         B, Km, D = mean_init.shape
         if Km < 3 or gamma_knots < 3:
@@ -225,10 +173,7 @@ class TrainableGaussianPath(nn.Module):
         return mean, dmean, gamma, dgamma
 
     def reciprocal_loss(self, t, u, beta, n_mc, direction):
-        """
-        t: (S,)
-        u: (B,1)
-        """
+        
         mean, dmean, gamma, dgamma = self.grid_stats(t)
         B, S, D = mean.shape
 
@@ -245,7 +190,7 @@ class TrainableGaussianPath(nn.Module):
         else:
             raise ValueError(direction)
 
-        # u is fixed along each conditional path.
+        
         uu = u[:, None, None, 0]
         state_cost = float(beta) * double_well_potential(x, uu)
         control_cost = 0.5 / (self.sigma ** 2) * drift.pow(2).sum(dim=-1)
@@ -253,7 +198,7 @@ class TrainableGaussianPath(nn.Module):
 
 
 class FrozenGaussianPath:
-    """Lightweight evaluator for already-fitted path control points."""
+    
 
     def __init__(self, mean_ctrl, gamma_ctrl, sigma):
         self.mean_ctrl = mean_ctrl
@@ -279,9 +224,9 @@ class FrozenGaussianPath:
         raise ValueError(direction)
 
 
-# -----------------------------------------------------------------------------
-# Conditional GSBM adaptation
-# -----------------------------------------------------------------------------
+
+
+
 
 class ConditionalGSBM(base.ConditionalDSBM):
     def __init__(
@@ -317,7 +262,7 @@ class ConditionalGSBM(base.ConditionalDSBM):
 
     @torch.no_grad()
     def _sample_sde_path(self, xstart, u, fb, n_ctrl):
-        """Sample current learned SDE and return path ordered in physical time 0->1."""
+        
         nsteps = int(self.cfg.num_steps)
         dt = 1.0 / nsteps
         ids = torch.linspace(0, nsteps, n_ctrl, device=self.device).round().long().tolist()
@@ -488,9 +433,9 @@ class ConditionalGSBM(base.ConditionalDSBM):
         }
 
 
-# -----------------------------------------------------------------------------
-# CLI / runner
-# -----------------------------------------------------------------------------
+
+
+
 
 def parse_args():
     p = argparse.ArgumentParser()

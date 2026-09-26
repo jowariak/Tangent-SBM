@@ -1,25 +1,5 @@
 #!/usr/bin/env python3
-"""
-double_well_dsbm_unconditional.py
 
-Plain DSBM baseline for the stochastic double-well benchmark.
-
-Unlike Conditional DSBM / Tangent-SBM, this model does NOT receive u:
-
-    b_theta(x,t)
-
-Therefore its intervention Jacobian is identically zero:
-    dX_T/du = 0.
-
-We still evaluate it against the same simulator truth:
-  - conditional mean RMSE
-  - right-well probability RMSE
-  - Jacobian relative error (exactly 1 when J* != 0)
-  - finite-response RMSE (model predicts zero response)
-
-The implementation mirrors double_well_conditional_dsbm.py as closely
-as possible for a fair architecture/training-budget comparison.
-"""
 
 import argparse
 import csv
@@ -427,7 +407,7 @@ def response_metrics(
         .to(device)
     )
 
-    # Plain DSBM is independent of u.
+    
     J_pred = torch.zeros_like(
         J_true
     )

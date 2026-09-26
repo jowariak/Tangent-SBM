@@ -1,38 +1,5 @@
 #!/usr/bin/env python3
-"""
-double_well_conditional_dsbm.py
 
-Conditional DSBM / IMF baseline for the stochastic double-well benchmark
-produced by double_well_data.py.
-
-The learned bridge receives intervention u persistently:
-
-    b_theta(x,u,t)
-
-but receives NO J* response supervision during training.
-
-This script:
-  - trains ordinary conditional DSBM for N IMF iterations,
-  - saves every IMF checkpoint,
-  - saves IMF-3 as the future Tangent-SBM fork,
-  - writes per-IMF convergence diagnostics,
-  - evaluates:
-        endpoint conditional-mean RMSE,
-        right-well probability RMSE,
-        expected Jacobian relative error / RMSE,
-        finite intervention-response RMSE,
-  - preserves checkpoint RNG state for a fair Tangent-SBM fork.
-
-Recommended first matched run:
-    python double_well_conditional_dsbm.py \
-        --data-dir runs/double_well_data \
-        --run-root runs/double_well_conditional \
-        --seed 32 \
-        --total-imf 7
-
-The Tangent-SBM branch should later fork from:
-    runs/double_well_conditional/seed_32/imf_3.pt
-"""
 
 import argparse
 import csv
@@ -51,9 +18,9 @@ import torch
 import torch.nn as nn
 
 
-# ============================================================
-# Utilities
-# ============================================================
+
+
+
 
 def set_seed(seed: int):
     random.seed(seed)
@@ -108,9 +75,9 @@ def tensor_to_list(x):
     )
 
 
-# ============================================================
-# Logging
-# ============================================================
+
+
+
 
 def setup_logging(path: Path):
     path.parent.mkdir(
@@ -149,34 +116,34 @@ def log(*args):
     )
 
 
-# ============================================================
-# Config
-# ============================================================
+
+
+
 
 @dataclass
 class Config:
     seed: int = 32
 
-    # Learned bridge discretization.
+    
     num_steps: int = 30
     reference_sigma: float = 0.50
     bridge_eps: float = 1e-3
 
-    # Drift MLP.
+    
     hidden: int = 128
     depth: int = 3
 
-    # IMF.
+    
     total_imf: int = 7
     fork_imf: int = 3
 
-    # Markov projection optimization.
+    
     inner_steps: int = 1200
     batch_size: int = 512
     lr: float = 1e-4
     grad_clip: float = 5.0
 
-    # Evaluation.
+    
     eval_mc: int = 32
     eval_sens_mc: int = 16
     eval_batch_size: int = 512
@@ -184,9 +151,9 @@ class Config:
     finite_delta: float = 0.25
 
 
-# ============================================================
-# Dataset
-# ============================================================
+
+
+
 
 SPLITS = [
     "train",
@@ -227,7 +194,7 @@ def load_dataset(
                 obj["xT"].float(),
         }
 
-        # Evaluation truth is intentionally not required for train.
+        
         if split != "train":
             required_truth = [
                 "true_conditional_mean",
@@ -332,9 +299,9 @@ def load_dataset(
     )
 
 
-# ============================================================
-# Conditional drift
-# ============================================================
+
+
+
 
 class ConditionalDriftNet(
     nn.Module
@@ -406,9 +373,9 @@ class ConditionalDriftNet(
         )
 
 
-# ============================================================
-# Conditional DSBM
-# ============================================================
+
+
+
 
 class ConditionalDSBM:
 
@@ -492,9 +459,9 @@ class ConditionalDSBM:
             None,
         )
 
-    # --------------------------------------------------------
-    # Reciprocal bridge matching
-    # --------------------------------------------------------
+    
+    
+    
 
     def get_train_tuple(
         self,
@@ -597,9 +564,9 @@ class ConditionalDSBM:
             target,
         )
 
-    # --------------------------------------------------------
-    # Learned SDE
-    # --------------------------------------------------------
+    
+    
+    
 
     def _noise_bank(
         self,
@@ -732,9 +699,9 @@ class ConditionalDSBM:
 
         return x
 
-    # --------------------------------------------------------
-    # IMF coupling regeneration
-    # --------------------------------------------------------
+    
+    
+    
 
     @torch.no_grad()
     def regenerate_coupling(
@@ -797,9 +764,9 @@ class ConditionalDSBM:
             u,
         )
 
-    # --------------------------------------------------------
-    # One Markov-projection pass
-    # --------------------------------------------------------
+    
+    
+    
 
     def train_pass(
         self,
@@ -975,9 +942,9 @@ class ConditionalDSBM:
                 )
         }
 
-    # --------------------------------------------------------
-    # Diagnostic tangent rollout
-    # --------------------------------------------------------
+    
+    
+    
 
     def tangent_rollout(
         self,
@@ -985,12 +952,7 @@ class ConditionalDSBM:
         u,
         noise_bank=None,
     ):
-        """
-        Samplewise dX_T/du of the learned forward SDE.
-
-        This is EVALUATION ONLY in Conditional DSBM.
-        No J* target is used during training.
-        """
+        
         cfg = (
             self.cfg
         )
@@ -1144,9 +1106,9 @@ class ConditionalDSBM:
         )
 
 
-# ============================================================
-# Evaluation
-# ============================================================
+
+
+
 
 @torch.no_grad()
 def endpoint_distribution_metrics(
@@ -1307,12 +1269,7 @@ def sensitivity_metrics(
     cfg,
     device,
 ):
-    """
-    Compare model expected path response
-        E[J_theta(x0,u,W)]
-    against simulator-estimated
-        J_star_mean(x0,u).
-    """
+    
     n = min(
         cfg.eval_batch_size,
         data["x0"]
@@ -1482,7 +1439,7 @@ def finite_response_metric(
     for _ in range(
         cfg.eval_mc
     ):
-        # Common stochastic forcing between u and u+delta.
+        
         noise_bank = (
             model._noise_bank(
                 x0,
@@ -1620,9 +1577,9 @@ def evaluate_split(
     return out
 
 
-# ============================================================
-# Convergence diagnostics
-# ============================================================
+
+
+
 
 def convergence_metrics(
     model,
@@ -1630,14 +1587,7 @@ def convergence_metrics(
     cfg,
     device,
 ):
-    """
-    Training-set convergence can evaluate endpoint moments using fresh
-    samples grouped against empirical training x1, but there is no
-    high-MC pointwise oracle stored for train. For a cheap diagnostic,
-    compare predicted mean against the observed stochastic endpoint x1.
-
-    This diagnostic is NOT a reported test metric.
-    """
+    
     n = min(
         1024,
         train_data["x0"]
@@ -1730,9 +1680,9 @@ def convergence_metrics(
     }
 
 
-# ============================================================
-# Checkpoints / output
-# ============================================================
+
+
+
 
 def save_checkpoint(
     path,
@@ -1835,9 +1785,9 @@ def write_convergence(
         )
 
 
-# ============================================================
-# CLI
-# ============================================================
+
+
+
 
 def parse_args():
     p = (
@@ -1940,9 +1890,9 @@ def parse_args():
     )
 
 
-# ============================================================
-# Main
-# ============================================================
+
+
+
 
 def main():
     args = (
@@ -1975,7 +1925,7 @@ def main():
     )
 
     if cfg.fork_imf >= cfg.total_imf:
-        # This is allowed if user only wants the fork itself.
+        
         if cfg.fork_imf != cfg.total_imf:
             raise ValueError(
                 "fork-imf must be <= total-imf."
@@ -2065,7 +2015,7 @@ def main():
         data_dir
     )
 
-    # Match finite intervention definition used by simulator truth.
+    
     cfg.finite_delta = float(
         metadata.get(
             "finite_delta",

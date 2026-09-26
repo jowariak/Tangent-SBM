@@ -1,32 +1,5 @@
 #!/usr/bin/env python3
-"""
-spdebench_sns_make_locked_final_eval.py
 
-Generate ONE fresh, locked final evaluation set for the stochastic 2D
-Navier--Stokes response benchmark.
-
-This set is intentionally disjoint from:
-  * endpoint training ICs,
-  * the original Seen/ID/Near/Far test ICs,
-  * the validation ICs used for hyperparameter selection.
-
-The intervention grids are the same pre-declared split definitions:
-  Seen:      {-1.0, 0.0, 1.0}
-  ID:        {-0.75, -0.25, 0.25, 0.75}
-  Near OOD:  {-1.25, 1.25}
-  Far OOD:   {-1.50, 1.50}
-
-Defaults match the original evaluation fidelity:
-  16 fresh ICs
-  32 independent endpoint samples / condition
-  16 common-noise centered-FD response pairs / condition
-  16 common-noise finite-response pairs / condition
-
-IMPORTANT:
-  Once final_eval_manifest.json exists, this script refuses to regenerate the
-  final set unless --overwrite is explicitly supplied.  For a clean protocol,
-  DO NOT use --overwrite after inspecting final results.
-"""
 
 from __future__ import annotations
 
@@ -152,7 +125,7 @@ def main():
         raise RuntimeError("initial_conditions.pt missing w_star")
     w_star = ic_obj["w_star"].to(device)
 
-    # Fresh ICs from exactly the same IC law, with a brand-new locked seed.
+    
     final_x0 = w_star + sim.grf.sample(args.final_ics)
 
     existing = unique_existing_ics(data_dir)
@@ -262,7 +235,7 @@ def main():
         print("finite_response_samples",
               tuple(obj["finite_response_samples"].shape), flush=True)
 
-    # Save the unique final ICs too, for auditability.
+    
     final_ic_path = data_dir / "final_eval_initial_conditions.pt"
     torch.save(
         {

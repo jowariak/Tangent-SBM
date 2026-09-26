@@ -1,9 +1,4 @@
-"""Gaussian conditional TSBM using unmodified authors' computational modules.
 
-The single-GPU adapter calls the authors' variational solver, conditional
-sampler and twisted target. Alternating, velocity, no-CV variant; EMA is an
-adapter choice. No response labels in training. See README for all differences.
-"""
 import argparse
 from dataclasses import asdict
 import hashlib
@@ -15,7 +10,7 @@ import sys
 import time
 from types import SimpleNamespace, ModuleType
 import torch
-# Full float32 policy that passed the #10 derivative check; used in every mode.
+
 torch.backends.cuda.matmul.allow_tf32 = False
 torch.backends.cudnn.allow_tf32 = False
 PRECISION = {'cuda_matmul_allow_tf32': False, 'cudnn_allow_tf32': False}
@@ -23,8 +18,8 @@ import gaussian_reference as base
 from fetch_official import ROOT, REVISION, sha
 from fetch_tsbm import source_record as tsbm_record, ROOT as TSBM_ROOT
 tsbm_record()
-# Load unchanged upstream files under a private package name. A regular
-# 'bridge' package elsewhere can override the original namespace-only vendor.
+
+
 _tsbm_package = ModuleType('_dsb_tsbm_vendor')
 _tsbm_package.__path__ = [str(TSBM_ROOT / 'bridge')]
 sys.modules['_dsb_tsbm_vendor'] = _tsbm_package
@@ -75,7 +70,7 @@ class ConditionalField(torch.nn.Module):
 
 
 class SpatialCost:
-    """Quadratic state cost; beta is normalized using training endpoints only."""
+    
     def __init__(self,beta,shape):
         if not math.isfinite(beta) or beta < 0: raise ValueError('Invalid cost coefficient')
         self.beta=beta
@@ -90,7 +85,7 @@ def fit_config(args):
 
 
 def random_conditional_pairs(x0,x1,a):
-    """Independent empirical coupling within each exact intervention anchor."""
+    
     out=x1.clone()
     for anchor in torch.unique(a,dim=0):
         idx=torch.where((a==anchor).all(1))[0]
@@ -99,7 +94,7 @@ def random_conditional_pairs(x0,x1,a):
 
 
 class TwistedCost:
-    """Use sigma^2 V_GSBM to match the physical cost/control ratio."""
+    
     min_t_cost=0.
     max_t_cost=1.
     def __init__(self,beta,shape,sigma):self.spatial=SpatialCost(beta*sigma**2,shape)
@@ -118,15 +113,15 @@ class TSBM:
             device=self.device,grid_ys=torch.linspace(0,1,args.gamma_grid,device=self.device))
 
     def fit_population(self,data,previous,args,pass_id):
-        # The authors' TSBM reciprocal objective uses the direction being trained,
-        # not the opposite direction used to generate the empirical coupling.
+        
+        
         fb='f' if previous in [None,'bwd'] else 'b'
         ccfg=SimpleNamespace(N=args.path_mc,T=args.path_times,nitr=args.fit_steps,
             nitr_first_it=args.fit_steps,optim='adam',lr_mean=.03,lr_gamma=.03)
         cost=TwistedCost(args.beta,self.shape,self.sigma)
         sampler=Twisted_BM_GeneralCost(cost,'tsbm',1.,self.sigma,(math.prod(self.shape),),'velocity',self.device)
-        # Full [0,1] Euler grid is declared for compatibility with the fixed evaluator.
-        # Matching and variational fitting still exclude singular boundary times.
+        
+        
         grids,_=get_sde_timesteps(1.,self.cfg.num_steps,0.,self.device)
         ids=torch.linspace(0,self.cfg.num_steps,8,device=self.device).long()
         t=grids['f'][ids];st=torch.linspace(0,1,8,device=self.device)
@@ -170,7 +165,7 @@ class TSBM:
             path=self.path(population['mean_t'].to(self.device),population['mean_xt'][idx].to(self.device),
                 population['gamma_s'].to(self.device),population['gamma_xs'][idx].to(self.device),args)
             path.eval();path.gamma.build_grid()
-            # Same low-discrepancy time sampling as the authors' continuous-cost trainer.
+            
             offset=torch.arange(B,device=self.device).view(B,1)/B
             t=2*eps+(1-4*eps)*torch.remainder(torch.rand(1,1,device=self.device)+offset,1)
             r=torch.remainder(torch.rand(1,S,1,device=self.device)+offset[:,None],1)

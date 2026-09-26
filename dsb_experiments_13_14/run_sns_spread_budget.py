@@ -71,7 +71,7 @@ def simulator(args):
     candidates=[args.spdebench_root] if args.spdebench_root else [Path(meta.get('spdebench_root','')),Path('SPDE_hackathon'),Path('SPDEBench')]
     root=next((p for p in candidates if (p/'data_gen/src/generator_sns.py').is_file()),None)
     if root is None:raise FileNotFoundError('Pass --spdebench-root pointing to the original SPDE_hackathon checkout')
-    # Match simulator code, including local modifications, when reusing chunks.
+    
     files={str(p.relative_to(root)):sha(p) for p in sorted((root/'data_gen/src').rglob('*.py'))}
     if not files:raise FileNotFoundError(f'No simulator sources under {root}/data_gen/src')
     commit=generator.git_commit(root);expected=meta.get('spdebench_git_commit')

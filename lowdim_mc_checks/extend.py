@@ -32,7 +32,7 @@ def main():
             command += ['--manifest', str(args.manifest)]
         subprocess.run(command + ['--check-only'], check=True)
         commands.append(command)
-        # Fixed ID extension of exactly the original methods and three seeds.
+        
         for method, template in spec[dataset]['models'].items():
             for seed in [32,42,52]:
                 cp = Path(template.format(seed=seed))
@@ -69,7 +69,7 @@ def main():
                         continue
                     saved['provenance'] = updated
                     copies.append((destination,saved))
-    # Validate everything before writing or running the extension.
+    
     for destination,saved in copies:
         destination.parent.mkdir(parents=True,exist_ok=True)
         temporary = destination.with_suffix('.tmp')

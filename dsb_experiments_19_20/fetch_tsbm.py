@@ -1,4 +1,4 @@
-"""Freeze authors' TSBM source on first setup; verify it on every later use."""
+
 import hashlib
 import io
 import json
@@ -28,8 +28,8 @@ def main():
     if (ROOT/'manifest.json').exists():
         r=source_record();print('Verified frozen TSBM revision',r['revision'],flush=True);return
     ROOT.mkdir(parents=True,exist_ok=True)
-    # Resolve main once; every file thereafter comes from this exact immutable SHA.
-    # Re-running setup never silently updates an established installation.
+    
+    
     revision=json.loads(download(f'https://api.github.com/repos/{REPO}/commits/main'))['sha']
     if not re.fullmatch('[0-9a-f]{40}',revision):raise RuntimeError('Invalid GitHub revision')
     print('Freezing official TSBM revision',revision,flush=True)

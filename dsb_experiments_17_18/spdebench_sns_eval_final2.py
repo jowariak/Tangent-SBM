@@ -1,32 +1,5 @@
 #!/usr/bin/env python3
-"""
-spdebench_sns_eval_final2.py
 
-ONE-SHOT evaluation of the frozen stochastic-NS models on FINAL2.
-
-Frozen protocol:
-  reference_sigma = 1.4
-  Conditional final = IMF 5
-  Tangent shared through IMF 3, constrained IMF 4--5
-  lambda_sens = 1000
-  sens_batch_size = 8
-  sens_pairs = 1
-  sens_every = 10
-  seeds = 32,42,52
-
-No training. No validation. No old test/final files are loaded.
-
-In addition to endpoint-distribution and finite-response metrics, this script
-predeclares response diagnostics:
-  * raw J RMSE
-  * zero-response RMSE
-  * mean per-condition EJ
-  * mean per-condition cosine similarity
-  * predicted/true response-norm ratio
-
-Response diagnostics use 64 model rollouts/condition by default to reduce MC
-noise in the estimated conditional-mean tangent.
-"""
 
 from __future__ import annotations
 
@@ -297,7 +270,7 @@ def main():
         cm, ccfg, cck = load_model(cond_cp, device, args.reference_sigma)
         tm, tcfg, tck = load_model(tang_cp, device, args.reference_sigma)
 
-        # Audit the frozen Tangent configuration when metadata are available.
+        
         if float(tck.get("lambda_sens", args.lambda_sens)) != float(args.lambda_sens):
             raise RuntimeError(f"{tang_cp}: wrong lambda")
         if int(tck.get("fork_imf", 3)) != 3:
@@ -323,7 +296,7 @@ def main():
 
         cdiag, tdiag = {}, {}
         for j, split in enumerate(FINAL2_FILES):
-            # Same MC stream for Conditional and Tangent.
+            
             diag_seed = seed_base + 50000 + j * 1000
             cpred = predict_mean_j(
                 cm, data[split], ccfg, device, std,

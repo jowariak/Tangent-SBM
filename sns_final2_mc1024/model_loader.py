@@ -1,4 +1,4 @@
-"""Frozen-model, validation-only response Monte Carlo convergence diagnostic."""
+
 import argparse
 import hashlib
 import json

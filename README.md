@@ -36,18 +36,6 @@ solver; see [dataset and experiment entry points](docs/EXPERIMENTS.md).
 
 Run scripts from the repository root. Each primary script supports `--help`.
 
-## Evaluate Pretrained Models
-
-Place the original data and checkpoint directories under `runs/`; edit
-`lowdim_mc_checks/paths.json` if necessary.
-
-```bash
-python lowdim_mc_checks/evaluate.py --dataset gaussian --check-only
-python lowdim_mc_checks/evaluate.py --dataset gaussian --mc 8 16 32 64 128 256 512 1024 2048 4096
-python lowdim_mc_checks/evaluate.py --dataset double_well --mc 8 16 32 64 128 256 512 1024 2048 4096
-```
-
-
 ## Documentation
 
 - [Experiment and dataset entry points](docs/EXPERIMENTS.md)

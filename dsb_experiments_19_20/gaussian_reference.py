@@ -1844,8 +1844,8 @@ def main():
 
         if imf == cfg.fork_imf:
             log(
-                "IMPORTANT: IMF-3 checkpoint "
-                "saved as future Tangent-SBM fork."
+                "IMF-3 checkpoint "
+               
             )
 
     train_seconds = (

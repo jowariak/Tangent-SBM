@@ -33,13 +33,10 @@ python lowdim_mc_checks/self_test.py
 ```
 
 GPU training is recommended for field experiments. The last command runs small
-CPU tests of tangent propagation, endpoint prediction, and paired finite changes.
-It does not train a model. SNS additionally requires the external SPDEBench
+CPU tests of tangent propagation, endpoint prediction, and paired finite changes. SNS additionally requires the external SPDEBench
 solver; see [dataset and experiment entry points](docs/EXPERIMENTS.md).
 
 Run scripts from the repository root. Each primary script supports `--help`.
-The original file names and adapter directories are retained so local imports
-and checkpoint conventions remain recognizable.
 
 ## Evaluate Pretrained Models
 
